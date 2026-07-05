@@ -109,9 +109,8 @@
 
                 <input type="number" id="ptCantidad" placeholder="Cantidad">
 
-           <button onclick="agregarProductoTerminado()">
-    Agregar
-</button>
+           <button id="btnPt" onclick="agregarProductoTerminado()">Agregar</button>
+           <button id="btnCancelPt" class="btn-cancelar" style="display:none;" onclick="cancelarEdicion()">Cancelar</button>
 
             </div>
 
@@ -162,9 +161,8 @@
 
                 <input type="text" id="ppMaquiladora" placeholder="Maquiladora">
 
-           <button onclick="agregarProductoProceso()">
-    Agregar
-</button>
+           <button id="btnPp" onclick="agregarProductoProceso()">Agregar</button>
+           <button id="btnCancelPp" class="btn-cancelar" style="display:none;" onclick="cancelarEdicion()">Cancelar</button>
 
             <table>
                 <thead>
@@ -204,9 +202,8 @@
 
                 <input type="number" id="mpCantidad" placeholder="Metros">
 
-              <button onclick="agregarMateriaPrima()">
-    Agregar
-</button>
+              <button id="btnMp" onclick="agregarMateriaPrima()">Agregar</button>
+              <button id="btnCancelMp" class="btn-cancelar" style="display:none;" onclick="cancelarEdicion()">Cancelar</button>
 
                 
             </div>
@@ -255,9 +252,8 @@
 
                 <input type="number" id="suCantidad" placeholder="Cantidad">
 
-                <button onclick="agregarSuministro()">
-                    Agregar
-                </button>
+                <button id="btnSu" onclick="agregarSuministro()">Agregar</button>
+                <button id="btnCancelSu" class="btn-cancelar" style="display:none;" onclick="cancelarEdicion()">Cancelar</button>
 
             </div>
 
@@ -281,9 +277,10 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-    <script src="js/supabase-config.js?v=2"></script>
-    <script src="js/supabase-client.js?v=2"></script>
-    <script src="js/inventario.js?v=2"></script>
+    <script src="js/supabase-config.js?v=3"></script>
+    <script src="js/supabase-client.js?v=3"></script>
+    <script src="js/crud.js?v=3"></script>
+    <script src="js/inventario.js?v=3"></script>
 
 </body>
 

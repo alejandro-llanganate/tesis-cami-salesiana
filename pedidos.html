@@ -124,9 +124,8 @@
                        id="stockCantidad"
                        placeholder="Cantidad">
 
-                <button onclick="agregarStockDisponible()">
-                    Agregar
-                </button>
+                <button id="btnStock" onclick="agregarStockDisponible()">Agregar</button>
+                <button id="btnCancelStock" class="btn-cancelar" style="display:none;" onclick="cancelarEdicion()">Cancelar</button>
 
             </div>
 
@@ -199,9 +198,8 @@
                 <input type="date"
                        id="pedidoFecha">
 
-                <button onclick="agregarProductoProducir()">
-                    Agregar
-                </button>
+                <button id="btnPedido" onclick="agregarProductoProducir()">Agregar</button>
+                <button id="btnCancelPedido" class="btn-cancelar" style="display:none;" onclick="cancelarEdicion()">Cancelar</button>
 
             </div>
 
@@ -261,9 +259,8 @@
                        id="entregaResponsable"
                        placeholder="Responsable">
 
-                <button onclick="agregarEntregaPedido()">
-                    Agregar
-                </button>
+                <button id="btnEntrega" onclick="agregarEntregaPedido()">Agregar</button>
+                <button id="btnCancelEntrega" class="btn-cancelar" style="display:none;" onclick="cancelarEdicion()">Cancelar</button>
 
             </div>
 
@@ -295,9 +292,10 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-    <script src="js/supabase-config.js?v=2"></script>
-    <script src="js/supabase-client.js?v=2"></script>
-    <script src="js/pedidos.js?v=2"></script>
+    <script src="js/supabase-config.js?v=3"></script>
+    <script src="js/supabase-client.js?v=3"></script>
+    <script src="js/crud.js?v=3"></script>
+    <script src="js/pedidos.js?v=3"></script>
 
 </body>
 

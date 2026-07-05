@@ -1100,6 +1100,29 @@ hr{
 
 }
 
+.btn-cancelar{
+    background:#6c757d;
+    color:white;
+    border:none;
+    padding:12px 20px;
+    border-radius:10px;
+    cursor:pointer;
+    font-size:15px;
+    margin-left:8px;
+}
+
+.btn-cancelar:hover{
+    background:#5a6268;
+}
+
+.btn-guardar{
+    background:#27ae60 !important;
+}
+
+.btn-guardar:hover{
+    background:#219a52 !important;
+}
+
 /* IMPRESIÓN DE REPORTES */
 
 @media print {

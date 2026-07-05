@@ -97,6 +97,29 @@
         return true;
     };
 
+    window.actualizarRegistro = async function (tabla, id, registro) {
+
+        var client = initSupabase();
+
+        if (!client) {
+            return null;
+        }
+
+        var resultado = await client
+            .from(tabla)
+            .update(registro)
+            .eq("id", id)
+            .select()
+            .single();
+
+        if (resultado.error) {
+            manejarErrorSupabase(resultado.error, "actualizar en " + tabla);
+            return null;
+        }
+
+        return resultado.data;
+    };
+
     window.normalizarPedidos = function (lista) {
 
         return lista.map(function (item) {
