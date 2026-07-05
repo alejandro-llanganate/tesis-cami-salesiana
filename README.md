@@ -1,1 +1,7 @@
 # tesis-cami-salesiana
+.
+.
+.
+.
+.
+.
