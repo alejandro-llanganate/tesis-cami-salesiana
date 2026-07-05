@@ -1,113 +1,116 @@
+(function () {
+    "use strict";
 
-// ========================================
-// CLIENTE SUPABASE
-// ========================================
+    var supabaseClient = null;
 
-let supabaseClient = null;
+    function initSupabase() {
 
-function initSupabase() {
+        if (!window.supabase || !window.supabase.createClient) {
+            console.error("Supabase SDK no cargado.");
+            return null;
+        }
 
-    if (!window.supabase) {
-        console.error("Supabase SDK no cargado.");
-        return null;
+        if (!supabaseClient) {
+            supabaseClient = window.supabase.createClient(
+                window.SUPABASE_URL,
+                window.SUPABASE_KEY
+            );
+        }
+
+        return supabaseClient;
     }
 
-    if (!supabaseClient) {
-        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    function manejarErrorSupabase(error, accion) {
+
+        console.error("Supabase:", error);
+
+        var mensaje = "Error al " + accion + ": " + error.message;
+
+        if (error.message.indexOf("does not exist") !== -1 || error.code === "42P01") {
+            mensaje = "Las tablas no existen aún. Ejecuta supabase/martin_company.sql en el SQL Editor de Supabase.";
+        }
+
+        alert(mensaje);
     }
 
-    return supabaseClient;
-}
+    window.obtenerRegistros = async function (tabla) {
 
-function manejarErrorSupabase(error, accion) {
+        var client = initSupabase();
 
-    console.error("Supabase:", error);
+        if (!client) {
+            return [];
+        }
 
-    let mensaje = "Error al " + accion + ": " + error.message;
+        var resultado = await client
+            .from(tabla)
+            .select("*")
+            .order("created_at", { ascending: false });
 
-    if (error.message.includes("does not exist") || error.code === "42P01") {
-        mensaje = "Las tablas no existen aún. Ejecuta supabase/schema.sql en el SQL Editor de Supabase.";
-    }
+        if (resultado.error) {
+            manejarErrorSupabase(resultado.error, "consultar " + tabla);
+            return [];
+        }
 
-    alert(mensaje);
-}
+        return resultado.data || [];
+    };
 
-async function obtenerRegistros(tabla) {
+    window.insertarRegistro = async function (tabla, registro) {
 
-    let client = initSupabase();
+        var client = initSupabase();
 
-    if (!client) {
-        return [];
-    }
+        if (!client) {
+            return null;
+        }
 
-    let { data, error } = await client
-        .from(tabla)
-        .select("*")
-        .order("created_at", { ascending: false });
+        var resultado = await client
+            .from(tabla)
+            .insert([registro])
+            .select()
+            .single();
 
-    if (error) {
-        manejarErrorSupabase(error, "consultar " + tabla);
-        return [];
-    }
+        if (resultado.error) {
+            manejarErrorSupabase(resultado.error, "guardar en " + tabla);
+            return null;
+        }
 
-    return data || [];
-}
+        return resultado.data;
+    };
 
-async function insertarRegistro(tabla, registro) {
+    window.eliminarRegistro = async function (tabla, id) {
 
-    let client = initSupabase();
+        var client = initSupabase();
 
-    if (!client) {
-        return null;
-    }
+        if (!client) {
+            return false;
+        }
 
-    let { data, error } = await client
-        .from(tabla)
-        .insert([registro])
-        .select()
-        .single();
+        var resultado = await client
+            .from(tabla)
+            .delete()
+            .eq("id", id);
 
-    if (error) {
-        manejarErrorSupabase(error, "guardar en " + tabla);
-        return null;
-    }
+        if (resultado.error) {
+            manejarErrorSupabase(resultado.error, "eliminar de " + tabla);
+            return false;
+        }
 
-    return data;
-}
+        return true;
+    };
 
-async function eliminarRegistro(tabla, id) {
+    window.normalizarPedidos = function (lista) {
 
-    let client = initSupabase();
+        return lista.map(function (item) {
+            return {
+                id: item.id,
+                pedido: item.numero,
+                cliente: item.cliente,
+                producto: item.producto,
+                talla: item.talla,
+                cantidad: item.cantidad,
+                fecha: item.fecha,
+                estado: item.estado
+            };
+        });
+    };
 
-    if (!client) {
-        return false;
-    }
-
-    let { error } = await client
-        .from(tabla)
-        .delete()
-        .eq("id", id);
-
-    if (error) {
-        manejarErrorSupabase(error, "eliminar de " + tabla);
-        return false;
-    }
-
-    return true;
-}
-
-function normalizarPedidos(lista) {
-
-    return lista.map(function (item) {
-        return {
-            id: item.id,
-            pedido: item.numero,
-            cliente: item.cliente,
-            producto: item.producto,
-            talla: item.talla,
-            cantidad: item.cantidad,
-            fecha: item.fecha,
-            estado: item.estado
-        };
-    });
-}
+})();
