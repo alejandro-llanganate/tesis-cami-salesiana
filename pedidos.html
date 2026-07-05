@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Pedidos</title>
+
+    <link rel="stylesheet"
+          href="css/styles.css">
+
+</head>
+
+<body>
+
+    <!-- SIDEBAR -->
+
+    <div class="sidebar">
+
+        <img src="img/LOGO.jpeg"
+             class="logo">
+
+        <h2>MARTIN Company</h2>
+
+        <ul>
+
+            <li><a href="index.html">Inicio</a></li>
+
+            <li><a href="inventario.html">Inventario</a></li>
+
+            <li><a href="pedidos.html">Pedidos</a></li>
+
+            <li><a href="reportes.html">Reportes</a></li>
+
+        </ul>
+
+    </div>
+
+    <!-- CONTENIDO -->
+
+    <div class="contenido">
+
+<h1>Gestión de Pedidos</h1>
+
+<p class="subtitulo">
+    Administración y seguimiento de pedidos de clientes.
+</p>
+
+<div id="menuPedidos" class="cards">
+
+    <div class="card"
+         onclick="mostrarSeccionPedido('stock')">
+
+        <h3>📦 Stock Disponible</h3>
+
+        <p>
+            Consulta de productos disponibles para atención inmediata.
+        </p>
+
+    </div>
+
+    <div class="card"
+         onclick="mostrarSeccionPedido('producir')">
+
+        <h3>🧵 Productos por Producir</h3>
+
+        <p>
+            Registro y seguimiento de pedidos pendientes de fabricación.
+        </p>
+
+    </div>
+
+    <div class="card"
+         onclick="mostrarSeccionPedido('entregasPedido')">
+
+        <h3>🚚 Entregas</h3>
+
+        <p>
+            Control de pedidos entregados y responsables de despacho.
+        </p>
+
+    </div>
+
+</div>
+
+        <!-- STOCK DISPONIBLE -->
+
+        <section id="stock"
+                 class="seccion-inventario"
+                 style="display:none;">
+
+            <button class="btn-volver"
+        onclick="volverMenuPedidos()">
+    ← Regresar a Pedidos
+</button>
+
+            <h2>Stock Disponible</h2>
+
+            <div class="formulario">
+
+                <input type="text"
+                       id="stockProducto"
+                       placeholder="Producto">
+
+                <select id="stockTalla">
+
+                    <option value="">Talla</option>
+                    <option>S</option>
+                    <option>M</option>
+                    <option>L</option>
+                    <option>XL</option>
+
+                </select>
+
+                <input type="text"
+                       id="stockColor"
+                       placeholder="Color">
+
+                <input type="number"
+                       id="stockCantidad"
+                       placeholder="Cantidad">
+
+                <button onclick="agregarStockDisponible()">
+                    Agregar
+                </button>
+
+            </div>
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>Producto</th>
+                        <th>Talla</th>
+                        <th>Color</th>
+                        <th>Cantidad</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="tablaStockDisponible">
+
+                </tbody>
+
+            </table>
+
+        </section>
+
+        <!-- PRODUCTOS POR PRODUCIR -->
+
+        <section id="producir"
+                 class="seccion-inventario"
+                 style="display:none;">
+
+            <button class="btn-volver"
+        onclick="volverMenuPedidos()">
+    ← Regresar a Pedidos
+</button>
+
+            <h2>Productos por Producir</h2>
+
+            <div class="formulario">
+
+                <input type="text"
+                       id="pedidoNumero"
+                       placeholder="N° Pedido">
+
+                <input type="text"
+                       id="pedidoCliente"
+                       placeholder="Cliente">
+
+                <input type="text"
+                       id="pedidoProducto"
+                       placeholder="Producto">
+
+                <select id="pedidoTalla">
+
+                    <option value="">Talla</option>
+                    <option>S</option>
+                    <option>M</option>
+                    <option>L</option>
+                    <option>XL</option>
+
+                </select>
+
+                <input type="number"
+                       id="pedidoCantidad"
+                       placeholder="Cantidad">
+
+                <input type="date"
+                       id="pedidoFecha">
+
+                <button onclick="agregarProductoProducir()">
+                    Agregar
+                </button>
+
+            </div>
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>N° Pedido</th>
+                        <th>Cliente</th>
+                        <th>Producto</th>
+                        <th>Talla</th>
+                        <th>Cantidad</th>
+                        <th>Fecha</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="tablaPorProducir">
+
+                </tbody>
+
+            </table>
+
+        </section>
+
+        <!-- ENTREGAS -->
+
+        <section id="entregasPedido"
+                 class="seccion-inventario"
+                 style="display:none;">
+
+            <button class="btn-volver"
+        onclick="volverMenuPedidos()">
+    ← Regresar a Pedidos
+</button>
+            <h2>Entregas</h2>
+
+            <div class="formulario">
+
+                <input type="text"
+                       id="entregaPedido"
+                       placeholder="N° Pedido">
+
+                <input type="text"
+                       id="entregaCliente"
+                       placeholder="Cliente">
+
+                <input type="date"
+                       id="entregaFecha">
+
+                <input type="text"
+                       id="entregaResponsable"
+                       placeholder="Responsable">
+
+                <button onclick="agregarEntregaPedido()">
+                    Agregar
+                </button>
+
+            </div>
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>N° Pedido</th>
+                        <th>Cliente</th>
+                        <th>Fecha Entrega</th>
+                        <th>Responsable</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="tablaEntregasPedido">
+
+                </tbody>
+
+            </table>
+
+        </section>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-config.js"></script>
+    <script src="js/supabase-client.js"></script>
+    <script src="js/pedidos.js"></script>
+
+</body>
+
+</html>

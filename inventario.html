@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventario - Martin Company</title>
+
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+
+    <!-- SIDEBAR -->
+
+    <div class="sidebar">
+        <img src="img/LOGO.jpeg"
+             class="logo">
+
+        <h2>Martin Company</h2>
+
+        <ul>
+            <li><a href="index.html">Inicio</a></li>
+            <li><a href="inventario.html">Inventario</a></li>
+            <li><a href="pedidos.html">Pedidos</a></li>
+            <li><a href="reportes.html">Reportes</a></li>
+        </ul>
+
+    </div>
+
+    <!-- CONTENIDO -->
+
+    <div class="contenido">
+<h1>Gestión de Inventario</h1>
+
+<p class="subtitulo">
+    Control y administración de productos, materiales e insumos.
+</p>
+
+<div id="menuInventario" class="cards">
+
+    <div class="card" onclick="mostrarSeccion('terminados')">
+
+        <h3>📦 Productos Terminados</h3>
+
+        <p>
+            Registro y control de prendas listas para entrega.
+        </p>
+
+    </div>
+
+    <div class="card" onclick="mostrarSeccion('proceso')">
+
+        <h3>🧵 Productos en Proceso</h3>
+
+        <p>
+            Seguimiento de producción y control de maquiladoras.
+        </p>
+
+    </div>
+
+    <div class="card" onclick="mostrarSeccion('materia')">
+
+        <h3>🧶 Materia Prima</h3>
+
+        <p>
+            Administración de telas y materiales disponibles.
+        </p>
+
+    </div>
+
+    <div class="card" onclick="mostrarSeccion('suministros')">
+
+        <h3>📋 Suministros</h3>
+
+        <p>
+            Gestión de insumos complementarios para producción.
+        </p>
+
+    </div>
+
+</div>
+        
+
+        <!-- PRODUCTOS TERMINADOS -->
+
+        <section id="terminados" class="seccion-inventario" style="display:none;">
+
+            <button class="btn-volver"
+        onclick="volverMenu()">
+    ← Regresar al Inventario
+</button>
+
+            <h2>Productos Terminados</h2>
+
+            <div class="formulario">
+
+                <input type="text" id="ptProducto" placeholder="Producto">
+
+                <select id="ptTalla">
+                    <option value="">Talla</option>
+                    <option>S</option>
+                    <option>M</option>
+                    <option>L</option>
+                    <option>XL</option>
+                </select>
+
+                <input type="text" id="ptColor" placeholder="Color">
+
+                <input type="number" id="ptCantidad" placeholder="Cantidad">
+
+           <button onclick="agregarProductoTerminado()">
+    Agregar
+</button>
+
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th>Talla</th>
+                        <th>Color</th>
+                        <th>Cantidad</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+
+                <tbody id="tablaTerminados"></tbody>
+
+            </table>
+
+        </section>
+
+        <!-- PRODUCTOS EN PROCESO -->
+
+        <section id="proceso" class="seccion-inventario" style="display:none;">
+
+            <button class="btn-volver"
+        onclick="volverMenu()">
+    ← Regresar al Inventario
+</button>
+
+            <h2>Productos en Proceso</h2>
+
+            <div class="formulario">
+
+                <input type="text" id="ppProducto" placeholder="Producto">
+
+                <select id="ppTalla">
+                    <option value="">Talla</option>
+                    <option>S</option>
+                    <option>M</option>
+                    <option>L</option>
+                    <option>XL</option>
+                </select>
+
+                <input type="text" id="ppColor" placeholder="Color">
+
+                <input type="number" id="ppCantidad" placeholder="Cantidad">
+
+                <input type="text" id="ppMaquiladora" placeholder="Maquiladora">
+
+           <button onclick="agregarProductoProceso()">
+    Agregar
+</button>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th>Talla</th>
+                        <th>Color</th>
+                        <th>Cantidad</th>
+                        <th>Maquiladora</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+
+                <tbody id="tablaProceso"></tbody>
+
+            </table>
+
+        </section>
+
+        <!-- MATERIA PRIMA -->
+
+        <section id="materia" class="seccion-inventario" style="display:none;">
+
+                  <button class="btn-volver"
+        onclick="volverMenu()">
+    ← Regresar al Inventario
+</button>
+
+            <h2>Materia Prima</h2> 
+
+            <div class="formulario">
+
+                <input type="text" id="mpTela" placeholder="Tipo de Tela">
+
+                <input type="text" id="mpColor" placeholder="Color">
+
+                <input type="number" id="mpCantidad" placeholder="Metros">
+
+              <button onclick="agregarMateriaPrima()">
+    Agregar
+</button>
+
+                
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tipo Tela</th>
+                        <th>Color</th>
+                        <th>Metros</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+
+                <tbody id="tablaMateriaPrima"></tbody>
+
+            </table>
+
+        </section>
+
+        <!-- SUMINISTROS -->
+
+        <section id="suministros" class="seccion-inventario" style="display:none;">
+
+            <button class="btn-volver"
+        onclick="volverMenu()">
+    ← Regresar al Inventario
+</button>
+
+            <h2>Suministros</h2>
+
+            <div class="formulario">
+
+                <select id="suNombre">
+                    <option value="">Seleccione</option>
+                    <option>Botón</option>
+                    <option>Cierre</option>
+                    <option>Elástico</option>
+                    <option>Hilo</option>
+                    <option>Etiqueta</option>
+                    <option>Funda de Empaque</option>
+                </select>
+
+                <input type="text" id="suColor" placeholder="Color">
+
+                <input type="number" id="suCantidad" placeholder="Cantidad">
+
+                <button onclick="agregarSuministro()">
+                    Agregar
+                </button>
+
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Suministro</th>
+                        <th>Color</th>
+                        <th>Cantidad</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+
+                <tbody id="tablaSuministros"></tbody>
+
+            </table>
+
+        </section>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-config.js"></script>
+    <script src="js/supabase-client.js"></script>
+    <script src="js/inventario.js"></script>
+
+</body>
+
+</html>

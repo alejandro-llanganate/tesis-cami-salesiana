@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>MARTIN Company</title>
+
+    <link rel="stylesheet"
+          href="css/styles.css">
+
+</head>
+
+<body>
+
+    <!-- SIDEBAR -->
+
+    <div class="sidebar">
+
+        <img src="img/LOGO.jpeg"
+             class="logo">
+
+        <h2>MARTIN Company</h2>
+
+        <ul>
+
+            <li><a href="index.html">Inicio</a></li>
+
+            <li><a href="inventario.html">Inventario</a></li>
+
+            <li><a href="pedidos.html">Pedidos</a></li>
+
+            <li><a href="reportes.html">Reportes</a></li>
+
+        </ul>
+
+    </div>
+
+    <!-- CONTENIDO -->
+
+    <div class="contenido">
+
+        <!-- BIENVENIDA -->
+
+        <div class="formulario">
+
+            <h1>Centro de Operaciones</h1>
+
+            <p>
+                Sistema de Gestión y Control de Producción de Uniformes Médicos
+            </p>
+
+        </div>
+
+        <br>
+
+        <!-- MÓDULOS -->
+
+        <h2>Módulos del Sistema</h2>
+
+        <div class="cards">
+
+            <div class="card"
+                 onclick="window.location.href='inventario.html'"
+                 style="cursor:pointer;">
+
+                <h3>📦 Inventario</h3>
+
+                <p>
+                    Gestión de productos, materia prima y suministros.
+                </p>
+
+            </div>
+
+            <div class="card"
+                 onclick="window.location.href='pedidos.html'"
+                 style="cursor:pointer;">
+
+                <h3>📋 Pedidos</h3>
+
+                <p>
+                    Registro y control de pedidos de clientes.
+                </p>
+
+            </div>
+
+            <div class="card"
+                 onclick="window.location.href='reportes.html'"
+                 style="cursor:pointer;">
+
+                <h3>📊 Reportes</h3>
+
+                <p>
+                    Análisis, KPIs y exportación de datos operativos.
+                </p>
+
+            </div>
+
+        </div>
+
+        <br><br>
+
+        <!-- RESUMEN OPERATIVO -->
+
+        <div class="formulario">
+
+            <h2>Resumen Operativo</h2>
+
+            <br>
+
+            <p>
+                📦 Productos Terminados:
+                <strong id="totalTerminados">0</strong>
+            </p>
+
+            <br>
+
+            <p>
+                🧵 Productos en Proceso:
+                <strong id="totalProceso">0</strong>
+            </p>
+
+            <br>
+
+            <p>
+                📋 Pedidos Pendientes:
+                <strong id="totalPedidos">0</strong>
+            </p>
+
+        </div>
+
+        <br><br>
+
+        <!-- INFORMACIÓN GENERAL -->
+
+        <div class="formulario">
+
+            <h2>Información General</h2>
+
+            <br>
+
+            <p>
+                <strong>Empresa:</strong> MARTIN Company
+            </p>
+
+            <br>
+
+            <p>
+                <strong>Área:</strong> Departamento de Producción
+            </p>
+
+            <br>
+
+            <p>
+                <strong>Proyecto:</strong> Transformación Digital del Departamento de Producción
+            </p>
+
+            <br>
+
+            <p>
+                <strong>Versión:</strong> 1.0
+            </p>
+
+        </div>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-config.js"></script>
+    <script src="js/supabase-client.js"></script>
+    <script src="js/index.js"></script>
+
+</body>
+
+</html>

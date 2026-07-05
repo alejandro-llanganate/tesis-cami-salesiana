@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Reportes - MARTIN Company</title>
+
+    <link rel="stylesheet"
+          href="css/styles.css">
+
+</head>
+
+<body>
+
+    <!-- SIDEBAR -->
+
+    <div class="sidebar">
+
+        <img src="img/LOGO.jpeg"
+             class="logo">
+
+        <h2>MARTIN Company</h2>
+
+        <ul>
+
+            <li><a href="index.html">Inicio</a></li>
+
+            <li><a href="inventario.html">Inventario</a></li>
+
+            <li><a href="pedidos.html">Pedidos</a></li>
+
+            <li><a href="reportes.html">Reportes</a></li>
+
+        </ul>
+
+    </div>
+
+    <!-- CONTENIDO -->
+
+    <div class="contenido">
+
+        <h1>Centro de Reportes</h1>
+
+        <p class="subtitulo">
+            Análisis y visualización de datos operativos del sistema.
+        </p>
+
+        <div id="menuReportes" class="cards">
+
+            <div class="card"
+                 onclick="mostrarSeccionReporte('resumen')">
+
+                <h3>📊 Resumen General</h3>
+
+                <p>
+                    KPIs y métricas clave del departamento de producción.
+                </p>
+
+            </div>
+
+            <div class="card"
+                 onclick="mostrarSeccionReporte('inventario')">
+
+                <h3>📦 Inventario</h3>
+
+                <p>
+                    Estado de productos terminados y en proceso.
+                </p>
+
+            </div>
+
+            <div class="card"
+                 onclick="mostrarSeccionReporte('pedidos')">
+
+                <h3>📋 Pedidos</h3>
+
+                <p>
+                    Pedidos pendientes y distribución por cliente.
+                </p>
+
+            </div>
+
+            <div class="card"
+                 onclick="mostrarSeccionReporte('produccion')">
+
+                <h3>🧵 Producción</h3>
+
+                <p>
+                    Carga de trabajo por maquiladora.
+                </p>
+
+            </div>
+
+            <div class="card"
+                 onclick="mostrarSeccionReporte('exportar')">
+
+                <h3>📥 Exportar</h3>
+
+                <p>
+                    Descargar datos en CSV o imprimir reportes.
+                </p>
+
+            </div>
+
+        </div>
+
+        <!-- RESUMEN GENERAL -->
+
+        <section id="resumen"
+                 class="seccion-inventario"
+                 style="display:none;">
+
+            <button class="btn-volver"
+                    onclick="volverMenuReportes()">
+                ← Regresar a Reportes
+            </button>
+
+            <h2>Resumen General</h2>
+
+            <div class="grid-kpi bloque">
+
+                <div class="card formulario card-kpi">
+                    <h3 id="kpiTerminados">0</h3>
+                    <p>Productos Terminados</p>
+                </div>
+
+                <div class="card formulario card-kpi">
+                    <h3 id="kpiProceso">0</h3>
+                    <p>Productos en Proceso</p>
+                </div>
+
+                <div class="card formulario card-kpi">
+                    <h3 id="kpiPedidos">0</h3>
+                    <p>Pedidos Pendientes</p>
+                </div>
+
+                <div class="card formulario card-kpi">
+                    <h3 id="kpiUnidadesPedidas">0</h3>
+                    <p>Unidades por Producir</p>
+                </div>
+
+            </div>
+
+            <div class="grid-kpi bloque">
+
+                <div class="card formulario card-kpi">
+                    <h3 id="kpiEficiencia">95%</h3>
+                    <p>Eficiencia de Producción</p>
+                </div>
+
+                <div class="card formulario card-kpi">
+                    <h3 id="kpiPrecision">98%</h3>
+                    <p>Precisión Materia Prima</p>
+                </div>
+
+                <div class="card formulario card-kpi">
+                    <h3 id="kpiCumplimiento">97%</h3>
+                    <p>Cumplimiento de Entregas</p>
+                </div>
+
+                <div class="card formulario card-kpi">
+                    <h3 id="kpiPlanificacion">15 min</h3>
+                    <p>Tiempo de Planificación</p>
+                </div>
+
+            </div>
+
+            <div class="formulario bloque">
+
+                <h3>Alertas de Stock</h3>
+                <br>
+
+                <p>
+                    🔴 Bajo stock:
+                    <strong id="alertaBajoStock">0</strong> registros
+                </p>
+
+                <br>
+
+                <p>
+                    🟡 Stock medio:
+                    <strong id="alertaStockMedio">0</strong> registros
+                </p>
+
+                <br>
+
+                <p>
+                    🟢 Disponible:
+                    <strong id="alertaDisponible">0</strong> registros
+                </p>
+
+            </div>
+
+        </section>
+
+        <!-- INVENTARIO -->
+
+        <section id="inventario"
+                 class="seccion-inventario"
+                 style="display:none;">
+
+            <button class="btn-volver"
+                    onclick="volverMenuReportes()">
+                ← Regresar a Reportes
+            </button>
+
+            <h2>Reporte de Inventario</h2>
+
+            <div class="formulario">
+
+                <h3>Productos Terminados</h3>
+
+            </div>
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>Producto</th>
+                        <th>Talla</th>
+                        <th>Color</th>
+                        <th>Cantidad</th>
+                        <th>Estado</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="tablaReporteTerminados">
+
+                </tbody>
+
+            </table>
+
+            <br><br>
+
+            <div class="formulario">
+
+                <h3>Productos en Proceso</h3>
+
+            </div>
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>Producto</th>
+                        <th>Talla</th>
+                        <th>Color</th>
+                        <th>Cantidad</th>
+                        <th>Maquiladora</th>
+                        <th>Estado</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="tablaReporteProceso">
+
+                </tbody>
+
+            </table>
+
+        </section>
+
+        <!-- PEDIDOS -->
+
+        <section id="pedidos"
+                 class="seccion-inventario"
+                 style="display:none;">
+
+            <button class="btn-volver"
+                    onclick="volverMenuReportes()">
+                ← Regresar a Reportes
+            </button>
+
+            <h2>Reporte de Pedidos</h2>
+
+            <div class="formulario">
+
+                <p>
+                    Total de pedidos registrados:
+                    <strong id="totalPedidosReporte">0</strong>
+                </p>
+
+                <br>
+
+                <p>
+                    Clientes activos:
+                    <strong id="totalClientesReporte">0</strong>
+                </p>
+
+            </div>
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>N° Pedido</th>
+                        <th>Cliente</th>
+                        <th>Producto</th>
+                        <th>Talla</th>
+                        <th>Cantidad</th>
+                        <th>Fecha</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="tablaReportePedidos">
+
+                </tbody>
+
+            </table>
+
+            <br><br>
+
+            <div class="formulario">
+
+                <h3>Pedidos por Cliente</h3>
+
+            </div>
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>Cliente</th>
+                        <th>Pedidos</th>
+                        <th>Unidades Totales</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="tablaReporteClientes">
+
+                </tbody>
+
+            </table>
+
+        </section>
+
+        <!-- PRODUCCIÓN -->
+
+        <section id="produccion"
+                 class="seccion-inventario"
+                 style="display:none;">
+
+            <button class="btn-volver"
+                    onclick="volverMenuReportes()">
+                ← Regresar a Reportes
+            </button>
+
+            <h2>Reporte de Producción</h2>
+
+            <div class="formulario">
+
+                <p>
+                    Maquiladoras activas:
+                    <strong id="totalMaquiladoras">0</strong>
+                </p>
+
+                <br>
+
+                <p>
+                    Unidades en producción:
+                    <strong id="totalUnidadesProduccion">0</strong>
+                </p>
+
+            </div>
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>Maquiladora</th>
+                        <th>Productos</th>
+                        <th>Unidades</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="tablaReporteMaquiladoras">
+
+                </tbody>
+
+            </table>
+
+        </section>
+
+        <!-- EXPORTAR -->
+
+        <section id="exportar"
+                 class="seccion-inventario"
+                 style="display:none;">
+
+            <button class="btn-volver"
+                    onclick="volverMenuReportes()">
+                ← Regresar a Reportes
+            </button>
+
+            <h2>Exportar Reportes</h2>
+
+            <div class="formulario">
+
+                <p>
+                    Descarga los datos del sistema en formato CSV o imprime el reporte actual.
+                </p>
+
+                <br>
+
+                <button onclick="exportarCSV('terminados')">
+                    Exportar Productos Terminados
+                </button>
+
+                <button onclick="exportarCSV('proceso')">
+                    Exportar Productos en Proceso
+                </button>
+
+                <button onclick="exportarCSV('pedidos')">
+                    Exportar Pedidos
+                </button>
+
+                <button onclick="exportarCSV('completo')">
+                    Exportar Reporte Completo
+                </button>
+
+                <br><br>
+
+                <button onclick="imprimirReporte()">
+                    Imprimir Reporte
+                </button>
+
+            </div>
+
+            <div id="areaImpresion"
+                 class="formulario bloque">
+
+                <h3>Vista Previa del Reporte</h3>
+                <br>
+                <div id="previewReporte"></div>
+
+            </div>
+
+        </section>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-config.js"></script>
+    <script src="js/supabase-client.js"></script>
+    <script src="js/reportes.js"></script>
+
+</body>
+
+</html>
