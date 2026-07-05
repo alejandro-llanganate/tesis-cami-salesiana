@@ -203,25 +203,46 @@ ALTER TABLE pedidos              ENABLE ROW LEVEL SECURITY;
 ALTER TABLE entregas             ENABLE ROW LEVEL SECURITY;
 ALTER TABLE reportes_generados   ENABLE ROW LEVEL SECURITY;
 
+-- Una política por tabla (FOR ALL evita el error de WITH CHECK en SELECT/DELETE)
+
+DROP POLICY IF EXISTS "acceso_publico" ON productos_terminados;
+CREATE POLICY "acceso_publico" ON productos_terminados FOR ALL USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "acceso_publico" ON productos_proceso;
+CREATE POLICY "acceso_publico" ON productos_proceso FOR ALL USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "acceso_publico" ON materia_prima;
+CREATE POLICY "acceso_publico" ON materia_prima FOR ALL USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "acceso_publico" ON suministros;
+CREATE POLICY "acceso_publico" ON suministros FOR ALL USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "acceso_publico" ON stock_disponible;
+CREATE POLICY "acceso_publico" ON stock_disponible FOR ALL USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "acceso_publico" ON pedidos;
+CREATE POLICY "acceso_publico" ON pedidos FOR ALL USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "acceso_publico" ON entregas;
+CREATE POLICY "acceso_publico" ON entregas FOR ALL USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "acceso_publico" ON reportes_generados;
+CREATE POLICY "acceso_publico" ON reportes_generados FOR ALL USING (true) WITH CHECK (true);
+
+-- Limpiar políticas viejas de ejecuciones anteriores (si existen)
 DO $$
-DECLARE t TEXT;
+DECLARE t TEXT; op TEXT;
 BEGIN
     FOREACH t IN ARRAY ARRAY[
         'productos_terminados','productos_proceso','materia_prima','suministros',
         'stock_disponible','pedidos','entregas','reportes_generados'
     ]
     LOOP
-        EXECUTE format('DROP POLICY IF EXISTS %I ON %I', 'publico_SELECT_'||t, t);
-        EXECUTE format('CREATE POLICY %I ON %I FOR SELECT USING (true)', 'publico_SELECT_'||t, t);
-
-        EXECUTE format('DROP POLICY IF EXISTS %I ON %I', 'publico_INSERT_'||t, t);
-        EXECUTE format('CREATE POLICY %I ON %I FOR INSERT WITH CHECK (true)', 'publico_INSERT_'||t, t);
-
-        EXECUTE format('DROP POLICY IF EXISTS %I ON %I', 'publico_UPDATE_'||t, t);
-        EXECUTE format('CREATE POLICY %I ON %I FOR UPDATE USING (true) WITH CHECK (true)', 'publico_UPDATE_'||t, t);
-
-        EXECUTE format('DROP POLICY IF EXISTS %I ON %I', 'publico_DELETE_'||t, t);
-        EXECUTE format('CREATE POLICY %I ON %I FOR DELETE USING (true)', 'publico_DELETE_'||t, t);
+        FOREACH op IN ARRAY ARRAY['SELECT','INSERT','UPDATE','DELETE']
+        LOOP
+            EXECUTE format('DROP POLICY IF EXISTS %I ON %I', 'publico_'||op||'_'||t, t);
+            EXECUTE format('DROP POLICY IF EXISTS %I ON %I', 'Acceso público '||op||' '||t, t);
+        END LOOP;
     END LOOP;
 END;
 $$;
