@@ -3,7 +3,7 @@
 // CLIENTE SUPABASE
 // ========================================
 
-let supabase = null;
+let supabaseClient = null;
 
 function initSupabase() {
 
@@ -12,11 +12,11 @@ function initSupabase() {
         return null;
     }
 
-    if (!supabase) {
-        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    if (!supabaseClient) {
+        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     }
 
-    return supabase;
+    return supabaseClient;
 }
 
 function manejarErrorSupabase(error, accion) {
