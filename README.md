@@ -27,6 +27,10 @@ git push
 
 Repo → pestaña **Actions** → workflow **Deploy GitHub Pages**
 
+> Si un despliegue falla con `deploy-pages`, el workflow usa `peaceiris/actions-gh-pages`
+> que publica en la rama `gh-pages`. En Settings → Pages, la fuente debe ser
+> **Deploy from a branch** → rama `gh-pages` → `/ (root)`.
+
 ## Base de datos (Supabase)
 
 Ejecuta `supabase/martin_company.sql` en el SQL Editor de Supabase.
