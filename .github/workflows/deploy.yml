@@ -26,7 +26,7 @@ jobs:
       - name: Preparar sitio estático
         run: |
           mkdir -p _site
-          cp index.html inventario.html pedidos.html reportes.html _site/
+          cp index.html login.html inventario.html pedidos.html produccion.html calidad.html reportes.html _site/
           cp -r css js img _site/
           cp .nojekyll _site/
           echo "Archivos listos:"

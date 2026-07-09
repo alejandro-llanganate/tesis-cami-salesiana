@@ -1,433 +1,145 @@
 
-// ========================================
-// DATOS
-// ========================================
+// INVENTARIO v2 — catálogos relacionados, sin duplicados
 
-let productosTerminados = [];
-let productosProceso = [];
-let materiaPrima = [];
-let suministros = [];
+var variantes = [], proveedores = [], materiaPrima = [], suministros = [];
 
-// ========================================
-// INICIO
-// ========================================
-
-document.addEventListener("DOMContentLoaded", function () {
-    cargarInventario();
+document.addEventListener("DOMContentLoaded", async function () {
+    if (!esSupervisora()) { window.location.href = "produccion.html"; return; }
+    configurarSidebar();
+    await cargarDatos();
 });
 
-async function cargarInventario() {
-
-    productosTerminados = await obtenerRegistros("productos_terminados");
-    productosProceso = await obtenerRegistros("productos_proceso");
-    materiaPrima = await obtenerRegistros("materia_prima");
+async function cargarDatos() {
+    variantes = await obtenerVariantes();
+    proveedores = await obtenerRegistros("proveedores");
+    materiaPrima = await obtenerRegistros("materia_prima", "*, proveedores(nombre)");
     suministros = await obtenerRegistros("suministros");
-
+    llenarSelect("mpProveedor", proveedores, "id", "nombre", "Proveedor");
     renderizarTerminados();
-    renderizarProceso();
-    renderizarMateriaPrima();
+    renderizarMateria();
     renderizarSuministros();
 }
 
-// ========================================
-// NAVEGACIÓN
-// ========================================
-
 function mostrarSeccion(id) {
-
-    cancelarEdicion();
-
     document.getElementById("menuInventario").style.display = "none";
-    document.getElementById("terminados").style.display = "none";
-    document.getElementById("proceso").style.display = "none";
-    document.getElementById("materia").style.display = "none";
-    document.getElementById("suministros").style.display = "none";
+    ["terminados","materia","suministros"].forEach(function(s){ document.getElementById(s).style.display="none"; });
     document.getElementById(id).style.display = "block";
 }
 
 function volverMenu() {
-
-    cancelarEdicion();
-
     document.getElementById("menuInventario").style.display = "flex";
-    document.getElementById("terminados").style.display = "none";
-    document.getElementById("proceso").style.display = "none";
-    document.getElementById("materia").style.display = "none";
-    document.getElementById("suministros").style.display = "none";
+    ["terminados","materia","suministros"].forEach(function(s){ document.getElementById(s).style.display="none"; });
 }
 
-// ========================================
-// ESTADO STOCK
-// ========================================
-
-function obtenerEstado(cantidad) {
-
-    if (cantidad >= 30) {
-        return "🟢 Disponible";
-    }
-
-    if (cantidad >= 10) {
-        return "🟡 Stock Medio";
-    }
-
+function obtenerEstado(c) {
+    if (c >= 30) return "🟢 Disponible";
+    if (c >= 10) return "🟡 Stock Medio";
     return "🔴 Bajo Stock";
 }
 
-// ========================================
-// RENDERIZADO
-// ========================================
-
 function renderizarTerminados() {
-
-    let tabla = document.getElementById("tablaTerminados");
-    tabla.innerHTML = "";
-
-    productosTerminados.forEach(function (item) {
-
-        let fila = tabla.insertRow();
-        fila.dataset.id = item.id;
-        fila.insertCell(0).textContent = item.producto;
-        fila.insertCell(1).textContent = item.talla;
-        fila.insertCell(2).textContent = item.color;
-        fila.insertCell(3).textContent = item.cantidad;
-        fila.insertCell(4).textContent = obtenerEstado(item.cantidad);
-        fila.insertCell(5).innerHTML = botonesAcciones(item.id, "productos_terminados", "terminados");
+    var t = document.getElementById("tablaTerminados");
+    t.innerHTML = "";
+    variantes.forEach(function(v) {
+        var f = t.insertRow();
+        f.insertCell(0).textContent = v.producto;
+        f.insertCell(1).textContent = v.color;
+        f.insertCell(2).textContent = v.talla;
+        f.insertCell(3).textContent = v.precio;
+        f.insertCell(4).textContent = v.stock;
+        f.insertCell(5).textContent = obtenerEstado(v.stock);
     });
 }
 
-function renderizarProceso() {
-
-    let tabla = document.getElementById("tablaProceso");
-    tabla.innerHTML = "";
-
-    productosProceso.forEach(function (item) {
-
-        let fila = tabla.insertRow();
-        fila.dataset.id = item.id;
-        fila.insertCell(0).textContent = item.producto;
-        fila.insertCell(1).textContent = item.talla;
-        fila.insertCell(2).textContent = item.color;
-        fila.insertCell(3).textContent = item.cantidad;
-        fila.insertCell(4).textContent = item.maquiladora;
-        fila.insertCell(5).textContent = obtenerEstado(item.cantidad);
-        fila.insertCell(6).innerHTML = botonesAcciones(item.id, "productos_proceso", "proceso");
-    });
-}
-
-function renderizarMateriaPrima() {
-
-    let tabla = document.getElementById("tablaMateriaPrima");
-    tabla.innerHTML = "";
-
-    materiaPrima.forEach(function (item) {
-
-        let fila = tabla.insertRow();
-        fila.dataset.id = item.id;
-        fila.insertCell(0).textContent = item.tela;
-        fila.insertCell(1).textContent = item.color;
-        fila.insertCell(2).textContent = item.cantidad;
-        fila.insertCell(3).textContent = obtenerEstado(item.cantidad);
-        fila.insertCell(4).innerHTML = botonesAcciones(item.id, "materia_prima", "materia");
+function renderizarMateria() {
+    var t = document.getElementById("tablaMateriaPrima");
+    t.innerHTML = "";
+    materiaPrima.forEach(function(m) {
+        var f = t.insertRow();
+        f.dataset.id = m.id;
+        f.insertCell(0).textContent = m.proveedores ? m.proveedores.nombre : "";
+        f.insertCell(1).textContent = m.nombre;
+        f.insertCell(2).textContent = m.precio;
+        f.insertCell(3).textContent = m.stock_actual + " " + m.unidad;
+        f.insertCell(4).textContent = obtenerEstado(Math.floor(m.stock_actual));
+        f.insertCell(5).innerHTML = '<button class="btn-editar" onclick="editarMateria(\''+m.id+'\')">Editar</button>';
     });
 }
 
 function renderizarSuministros() {
-
-    let tabla = document.getElementById("tablaSuministros");
-    tabla.innerHTML = "";
-
-    suministros.forEach(function (item) {
-
-        let fila = tabla.insertRow();
-        fila.dataset.id = item.id;
-        fila.insertCell(0).textContent = item.nombre;
-        fila.insertCell(1).textContent = item.color;
-        fila.insertCell(2).textContent = item.cantidad;
-        fila.insertCell(3).textContent = obtenerEstado(item.cantidad);
-        fila.insertCell(4).innerHTML = botonesAcciones(item.id, "suministros", "suministros");
+    var t = document.getElementById("tablaSuministros");
+    t.innerHTML = "";
+    suministros.forEach(function(s) {
+        var f = t.insertRow();
+        f.dataset.id = s.id;
+        f.insertCell(0).textContent = s.nombre;
+        f.insertCell(1).textContent = s.tipo;
+        f.insertCell(2).textContent = s.stock_actual;
+        f.insertCell(3).textContent = obtenerEstado(Math.floor(s.stock_actual));
+        f.insertCell(4).innerHTML = '<button class="btn-editar" onclick="editarSuministro(\''+s.id+'\')">Editar</button>';
     });
 }
 
-// ========================================
-// EDITAR
-// ========================================
-
-function editarRegistro(id, tabla, seccion) {
-
-    let item = null;
-
-    if (seccion === "terminados") {
-        item = productosTerminados.find(function (p) { return p.id === id; });
-        if (!item) return;
-        iniciarEdicion({
-            id: id,
-            tabla: tabla,
-            seccion: seccion,
-            btnId: "btnPt",
-            btnCancelId: "btnCancelPt",
-            btnTexto: "Agregar",
-            campos: [
-                { id: "ptProducto", valor: item.producto },
-                { id: "ptTalla", valor: item.talla },
-                { id: "ptColor", valor: item.color },
-                { id: "ptCantidad", valor: item.cantidad }
-            ]
-        });
-    }
-
-    if (seccion === "proceso") {
-        item = productosProceso.find(function (p) { return p.id === id; });
-        if (!item) return;
-        iniciarEdicion({
-            id: id,
-            tabla: tabla,
-            seccion: seccion,
-            btnId: "btnPp",
-            btnCancelId: "btnCancelPp",
-            btnTexto: "Agregar",
-            campos: [
-                { id: "ppProducto", valor: item.producto },
-                { id: "ppTalla", valor: item.talla },
-                { id: "ppColor", valor: item.color },
-                { id: "ppCantidad", valor: item.cantidad },
-                { id: "ppMaquiladora", valor: item.maquiladora }
-            ]
-        });
-    }
-
-    if (seccion === "materia") {
-        item = materiaPrima.find(function (p) { return p.id === id; });
-        if (!item) return;
-        iniciarEdicion({
-            id: id,
-            tabla: tabla,
-            seccion: seccion,
-            btnId: "btnMp",
-            btnCancelId: "btnCancelMp",
-            btnTexto: "Agregar",
-            campos: [
-                { id: "mpTela", valor: item.tela },
-                { id: "mpColor", valor: item.color },
-                { id: "mpCantidad", valor: item.cantidad }
-            ]
-        });
-    }
-
-    if (seccion === "suministros") {
-        item = suministros.find(function (p) { return p.id === id; });
-        if (!item) return;
-        iniciarEdicion({
-            id: id,
-            tabla: tabla,
-            seccion: seccion,
-            btnId: "btnSu",
-            btnCancelId: "btnCancelSu",
-            btnTexto: "Agregar",
-            campos: [
-                { id: "suNombre", valor: item.nombre },
-                { id: "suColor", valor: item.color },
-                { id: "suCantidad", valor: item.cantidad }
-            ]
-        });
-    }
-}
-
-// ========================================
-// ELIMINAR
-// ========================================
-
-async function eliminarRegistroFila(id, tabla, seccion) {
-
-    if (!confirm("¿Desea eliminar este registro?")) {
-        return;
-    }
-
-    let eliminado = await eliminarRegistro(tabla, id);
-
-    if (!eliminado) {
-        return;
-    }
-
-    if (edicionActiva && edicionActiva.id === id) {
-        cancelarEdicion();
-    }
-
-    if (seccion === "terminados") {
-        productosTerminados = productosTerminados.filter(function (p) { return p.id !== id; });
-        renderizarTerminados();
-    }
-
-    if (seccion === "proceso") {
-        productosProceso = productosProceso.filter(function (p) { return p.id !== id; });
-        renderizarProceso();
-    }
-
-    if (seccion === "materia") {
-        materiaPrima = materiaPrima.filter(function (p) { return p.id !== id; });
-        renderizarMateriaPrima();
-    }
-
-    if (seccion === "suministros") {
-        suministros = suministros.filter(function (p) { return p.id !== id; });
-        renderizarSuministros();
-    }
-}
-
-// ========================================
-// PRODUCTOS TERMINADOS
-// ========================================
-
-async function agregarProductoTerminado() {
-
-    let producto = document.getElementById("ptProducto").value.trim();
-    let talla = document.getElementById("ptTalla").value;
-    let color = document.getElementById("ptColor").value.trim();
-    let cantidad = parseInt(document.getElementById("ptCantidad").value);
-
-    if (producto === "" || talla === "" || color === "" || isNaN(cantidad)) {
-        alert("Complete todos los campos");
-        return;
-    }
-
-    let datos = { producto: producto, talla: talla, color: color, cantidad: cantidad };
-
-    if (edicionActiva && edicionActiva.seccion === "terminados") {
-
-        let actualizado = await actualizarRegistro("productos_terminados", edicionActiva.id, datos);
-
-        if (!actualizado) return;
-
-        let indice = productosTerminados.findIndex(function (p) { return p.id === edicionActiva.id; });
-        productosTerminados[indice] = actualizado;
-        renderizarTerminados();
-        cancelarEdicion();
-        return;
-    }
-
-    let registro = await insertarRegistro("productos_terminados", datos);
-
-    if (!registro) return;
-
-    productosTerminados.unshift(registro);
-    renderizarTerminados();
-    limpiarCampos(["ptProducto", "ptTalla", "ptColor", "ptCantidad"]);
-}
-
-// ========================================
-// PRODUCTOS EN PROCESO
-// ========================================
-
-async function agregarProductoProceso() {
-
-    let producto = document.getElementById("ppProducto").value.trim();
-    let talla = document.getElementById("ppTalla").value;
-    let color = document.getElementById("ppColor").value.trim();
-    let cantidad = parseInt(document.getElementById("ppCantidad").value);
-    let maquiladora = document.getElementById("ppMaquiladora").value.trim();
-
-    if (producto === "" || talla === "" || color === "" || maquiladora === "" || isNaN(cantidad)) {
-        alert("Complete todos los campos");
-        return;
-    }
-
-    let datos = { producto: producto, talla: talla, color: color, cantidad: cantidad, maquiladora: maquiladora };
-
-    if (edicionActiva && edicionActiva.seccion === "proceso") {
-
-        let actualizado = await actualizarRegistro("productos_proceso", edicionActiva.id, datos);
-
-        if (!actualizado) return;
-
-        let indice = productosProceso.findIndex(function (p) { return p.id === edicionActiva.id; });
-        productosProceso[indice] = actualizado;
-        renderizarProceso();
-        cancelarEdicion();
-        return;
-    }
-
-    let registro = await insertarRegistro("productos_proceso", datos);
-
-    if (!registro) return;
-
-    productosProceso.unshift(registro);
-    renderizarProceso();
-    limpiarCampos(["ppProducto", "ppTalla", "ppColor", "ppCantidad", "ppMaquiladora"]);
-}
-
-// ========================================
-// MATERIA PRIMA
-// ========================================
-
 async function agregarMateriaPrima() {
-
-    let tela = document.getElementById("mpTela").value.trim();
-    let color = document.getElementById("mpColor").value.trim();
-    let cantidad = parseInt(document.getElementById("mpCantidad").value);
-
-    if (tela === "" || color === "" || isNaN(cantidad)) {
-        alert("Complete todos los campos");
-        return;
-    }
-
-    let datos = { tela: tela, color: color, cantidad: cantidad };
+    var prov = document.getElementById("mpProveedor").value;
+    var nombre = document.getElementById("mpNombre").value.trim();
+    var precio = parseFloat(document.getElementById("mpPrecio").value);
+    var stock = parseFloat(document.getElementById("mpStock").value);
+    if (!prov || !nombre || isNaN(precio) || isNaN(stock)) { alert("Complete todos los campos"); return; }
 
     if (edicionActiva && edicionActiva.seccion === "materia") {
-
-        let actualizado = await actualizarRegistro("materia_prima", edicionActiva.id, datos);
-
-        if (!actualizado) return;
-
-        let indice = materiaPrima.findIndex(function (p) { return p.id === edicionActiva.id; });
-        materiaPrima[indice] = actualizado;
-        renderizarMateriaPrima();
+        await actualizarRegistro("materia_prima", edicionActiva.id, {
+            proveedor_id: prov, nombre: nombre, precio: precio, stock_actual: stock
+        });
         cancelarEdicion();
-        return;
+    } else {
+        await insertarRegistro("materia_prima", {
+            proveedor_id: prov, nombre: nombre, precio: precio, stock_actual: stock
+        });
     }
-
-    let registro = await insertarRegistro("materia_prima", datos);
-
-    if (!registro) return;
-
-    materiaPrima.unshift(registro);
-    renderizarMateriaPrima();
-    limpiarCampos(["mpTela", "mpColor", "mpCantidad"]);
+    await cargarDatos();
+    limpiarCampos(["mpNombre","mpPrecio","mpStock"]);
 }
 
-// ========================================
-// SUMINISTROS
-// ========================================
+function editarMateria(id) {
+    var m = materiaPrima.find(function(x){ return x.id === id; });
+    if (!m) return;
+    iniciarEdicion({
+        id: id, seccion: "materia", btnId: "btnMp", btnCancelId: "btnCancelMp", btnTexto: "Agregar",
+        campos: [
+            { id: "mpProveedor", valor: m.proveedor_id },
+            { id: "mpNombre", valor: m.nombre },
+            { id: "mpPrecio", valor: m.precio },
+            { id: "mpStock", valor: m.stock_actual }
+        ]
+    });
+}
 
 async function agregarSuministro() {
-
-    let suministro = document.getElementById("suNombre").value;
-    let color = document.getElementById("suColor").value.trim();
-    let cantidad = parseInt(document.getElementById("suCantidad").value);
-
-    if (suministro === "" || color === "" || isNaN(cantidad)) {
-        alert("Complete todos los campos");
-        return;
-    }
-
-    let datos = { nombre: suministro, color: color, cantidad: cantidad };
+    var nombre = document.getElementById("suNombre").value.trim();
+    var tipo = document.getElementById("suTipo").value;
+    var stock = parseFloat(document.getElementById("suStock").value);
+    if (!nombre || !tipo || isNaN(stock)) { alert("Complete todos los campos"); return; }
 
     if (edicionActiva && edicionActiva.seccion === "suministros") {
-
-        let actualizado = await actualizarRegistro("suministros", edicionActiva.id, datos);
-
-        if (!actualizado) return;
-
-        let indice = suministros.findIndex(function (p) { return p.id === edicionActiva.id; });
-        suministros[indice] = actualizado;
-        renderizarSuministros();
+        await actualizarRegistro("suministros", edicionActiva.id, { nombre: nombre, tipo: tipo, stock_actual: stock });
         cancelarEdicion();
-        return;
+    } else {
+        await insertarRegistro("suministros", { nombre: nombre, tipo: tipo, stock_actual: stock, precio: 0 });
     }
+    await cargarDatos();
+    limpiarCampos(["suNombre","suStock"]);
+}
 
-    let registro = await insertarRegistro("suministros", datos);
-
-    if (!registro) return;
-
-    suministros.unshift(registro);
-    renderizarSuministros();
-    limpiarCampos(["suNombre", "suColor", "suCantidad"]);
+function editarSuministro(id) {
+    var s = suministros.find(function(x){ return x.id === id; });
+    if (!s) return;
+    iniciarEdicion({
+        id: id, seccion: "suministros", btnId: "btnSu", btnCancelId: "btnCancelSu", btnTexto: "Agregar",
+        campos: [
+            { id: "suNombre", valor: s.nombre },
+            { id: "suTipo", valor: s.tipo },
+            { id: "suStock", valor: s.stock_actual }
+        ]
+    });
 }

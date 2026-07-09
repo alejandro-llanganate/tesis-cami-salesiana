@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calidad - MARTIN Company</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="sidebar">
+        <img src="img/LOGO.jpeg" class="logo">
+        <h2>MARTIN Company</h2>
+        <ul></ul>
+    </div>
+    <div class="contenido">
+        <h1>Control de Calidad</h1>
+        <p class="subtitulo">10 parámetros de calidad — al aprobar se suma al stock terminado</p>
+
+        <h2>Órdenes pendientes de inspección</h2>
+        <table>
+            <thead><tr><th>Pedido</th><th>Maquiladora</th><th>Avance</th><th>Acción</th></tr></thead>
+            <tbody id="tablaOrdenesCalidad"></tbody>
+        </table>
+
+        <section id="seccionInspeccion" style="display:none;">
+            <input type="hidden" id="inspOrdenId">
+            <h2>Inspección de Calidad</h2>
+            <div id="criteriosLista"></div>
+            <br>
+            <button onclick="guardarInspeccion()">Finalizar inspección y actualizar stock</button>
+        </section>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <script src="js/supabase-config.js?v=4"></script>
+    <script src="js/supabase-client.js?v=4"></script>
+    <script src="js/catalogos.js?v=4"></script>
+    <script src="js/calidad.js?v=4"></script>
+</body>
+</html>

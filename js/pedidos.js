@@ -1,371 +1,193 @@
 
-// ========================================
-// DATOS
-// ========================================
+// PEDIDOS v2 — flujo completo de gestión
 
-let pedidos = [];
-let stockDisponible = [];
-let entregas = [];
+var pedidosLista = [], clientes = [], variantes = [], maquiladoras = [];
+var itemPedido = [];
 
-// ========================================
-// INICIO
-// ========================================
-
-document.addEventListener("DOMContentLoaded", function () {
-    cargarPedidos();
+document.addEventListener("DOMContentLoaded", async function () {
+    if (!esSupervisora()) { window.location.href = "produccion.html"; return; }
+    configurarSidebar();
+    await cargarCatalogos();
+    await cargarPedidos();
 });
 
-async function cargarPedidos() {
+async function cargarCatalogos() {
+    clientes = await obtenerRegistros("clientes");
+    variantes = await obtenerVariantes();
+    maquiladoras = await obtenerPerfiles("maquiladora");
+    llenarSelect("pedCliente", clientes, "id", "nombre", "Cliente");
+    llenarSelect("opMaquiladora", maquiladoras, "id", "nombre", "Maquiladora");
 
-    let pedidosRaw = await obtenerRegistros("pedidos");
-    pedidos = normalizarPedidos(pedidosRaw);
-    stockDisponible = await obtenerRegistros("stock_disponible");
-    entregas = await obtenerRegistros("entregas");
-
-    renderizarStock();
-    renderizarPorProducir();
-    renderizarEntregas();
+    var productos = {};
+    variantes.forEach(function(v){ productos[v.producto] = true; });
+    llenarSelect("pedProducto", Object.keys(productos).map(function(p){ return {id:p, nombre:p}; }), "id", "nombre", "Producto");
 }
 
-// ========================================
-// NAVEGACIÓN
-// ========================================
+async function cargarPedidos() {
+    pedidosLista = await obtenerPedidosCompletos();
+    renderizarPedidos();
+    renderizarStock();
+}
 
 function mostrarSeccionPedido(id) {
-
-    cancelarEdicion();
-
     document.getElementById("menuPedidos").style.display = "none";
-    document.getElementById("stock").style.display = "none";
-    document.getElementById("producir").style.display = "none";
-    document.getElementById("entregasPedido").style.display = "none";
+    ["registro","lista","stock","compras"].forEach(function(s){
+        var el = document.getElementById(s);
+        if (el) el.style.display = "none";
+    });
     document.getElementById(id).style.display = "block";
 }
 
 function volverMenuPedidos() {
-
-    cancelarEdicion();
-
     document.getElementById("menuPedidos").style.display = "flex";
-    document.getElementById("stock").style.display = "none";
-    document.getElementById("producir").style.display = "none";
-    document.getElementById("entregasPedido").style.display = "none";
+    ["registro","lista","stock","compras"].forEach(function(s){
+        var el = document.getElementById(s);
+        if (el) el.style.display = "none";
+    });
 }
 
-// ========================================
-// UTILIDADES
-// ========================================
-
-function obtenerEstado(cantidad) {
-
-    if (cantidad >= 30) {
-        return "🟢 Disponible";
-    }
-
-    if (cantidad >= 10) {
-        return "🟡 Stock Medio";
-    }
-
-    return "🔴 Bajo Stock";
+function onProductoChange() {
+    var prod = document.getElementById("pedProducto").value;
+    var colores = filtrarColoresPorProducto(variantes, prod);
+    llenarSelect("pedColor", colores.map(function(c){ return {id:c, nombre:c}; }), "id", "nombre", "Color");
+    document.getElementById("pedTalla").innerHTML = '<option value="">Talla</option>';
 }
 
-function estadoPedido(estado) {
-
-    if (estado === "en_proceso") {
-        return "🔵 En Proceso";
-    }
-
-    if (estado === "completado") {
-        return "🟢 Completado";
-    }
-
-    if (estado === "cancelado") {
-        return "🔴 Cancelado";
-    }
-
-    return "🟡 Pendiente";
+function onColorChange() {
+    var prod = document.getElementById("pedProducto").value;
+    var color = document.getElementById("pedColor").value;
+    var vars = filtrarTallasPorProductoColor(variantes, prod, color);
+    llenarSelect("pedTalla", vars.map(function(v){ return {id:v.talla, nombre:v.talla}; }), "id", "nombre", "Talla");
 }
 
-// ========================================
-// RENDERIZADO
-// ========================================
+function agregarItemPedido() {
+    var prod = document.getElementById("pedProducto").value;
+    var color = document.getElementById("pedColor").value;
+    var talla = document.getElementById("pedTalla").value;
+    var cant = parseInt(document.getElementById("pedCantidad").value);
+    if (!prod || !color || !talla || isNaN(cant)) { alert("Complete producto, color, talla y cantidad"); return; }
+    var varId = buscarVarianteId(variantes, prod, color, talla);
+    if (!varId) { alert("Variante no encontrada"); return; }
+    itemPedido.push({ producto_variante_id: varId, cantidad: cant, etiqueta: prod+" | "+color+" | "+talla });
+    renderizarItemsTemp();
+    limpiarCampos(["pedCantidad"]);
+}
+
+function renderizarItemsTemp() {
+    var t = document.getElementById("tablaItemsTemp");
+    t.innerHTML = "";
+    itemPedido.forEach(function(it, i) {
+        var f = t.insertRow();
+        f.insertCell(0).textContent = it.etiqueta;
+        f.insertCell(1).textContent = it.cantidad;
+        f.insertCell(2).innerHTML = '<button class="btn-eliminar" onclick="quitarItem('+i+')">Quitar</button>';
+    });
+}
+
+function quitarItem(i) { itemPedido.splice(i, 1); renderizarItemsTemp(); }
+
+async function registrarPedido() {
+    var cliente = document.getElementById("pedCliente").value;
+    var numero = document.getElementById("pedNumero").value.trim();
+    var fecha = document.getElementById("pedFecha").value;
+    var fechaEnt = document.getElementById("pedFechaEntrega").value;
+    if (!cliente || !numero || !fecha || itemPedido.length === 0) {
+        alert("Complete cliente, número, fecha y al menos un ítem"); return;
+    }
+
+    var pedido = await insertarRegistro("pedidos", {
+        numero: numero, cliente_id: cliente, fecha: fecha,
+        fecha_entrega_planeada: fechaEnt || null, estado: "registrado"
+    });
+    if (!pedido) return;
+
+    for (var i = 0; i < itemPedido.length; i++) {
+        await insertarRegistro("pedido_items", {
+            pedido_id: pedido.id,
+            producto_variante_id: itemPedido[i].producto_variante_id,
+            cantidad: itemPedido[i].cantidad
+        });
+    }
+
+    var resultado = await llamarRPC("verificar_stock_pedido", { p_pedido_id: pedido.id });
+    if (resultado && resultado.stock_suficiente) {
+        alert("Pedido registrado. Stock suficiente → listo para producción.");
+    } else {
+        alert("Pedido registrado. Stock insuficiente → se generó solicitud de compra.");
+    }
+
+    itemPedido = [];
+    renderizarItemsTemp();
+    limpiarCampos(["pedNumero","pedFecha","pedFechaEntrega","pedCantidad"]);
+    await cargarPedidos();
+}
+
+function renderizarPedidos() {
+    var t = document.getElementById("tablaPedidos");
+    t.innerHTML = "";
+    pedidosLista.forEach(function(p) {
+        var f = t.insertRow();
+        f.insertCell(0).textContent = p.numero;
+        f.insertCell(1).textContent = p.clientes.nombre;
+        f.insertCell(2).textContent = p.fecha;
+        f.insertCell(3).textContent = estadoPedidoTexto(p.estado);
+        var acciones = "";
+        if (p.estado === "materia_recibida") {
+            acciones += '<button onclick="abrirOrdenProduccion(\''+p.id+'\')">Generar OP</button> ';
+        }
+        if (p.estado === "stock_insuficiente") {
+            acciones += '<button onclick="recibirCompra(\''+p.id+'\')">Recibir materia</button> ';
+        }
+        if (p.estado === "aprobado_calidad") {
+            acciones += '<button onclick="registrarEntrega(\''+p.id+'\')">Entregar</button>';
+        }
+        f.insertCell(4).innerHTML = acciones;
+    });
+}
 
 function renderizarStock() {
-
-    let tabla = document.getElementById("tablaStockDisponible");
-    tabla.innerHTML = "";
-
-    stockDisponible.forEach(function (item) {
-
-        let fila = tabla.insertRow();
-        fila.dataset.id = item.id;
-        fila.insertCell(0).textContent = item.producto;
-        fila.insertCell(1).textContent = item.talla;
-        fila.insertCell(2).textContent = item.color;
-        fila.insertCell(3).textContent = item.cantidad;
-        fila.insertCell(4).textContent = obtenerEstado(item.cantidad);
-        fila.insertCell(5).innerHTML = botonesAcciones(item.id, "stock_disponible", "stock");
+    var t = document.getElementById("tablaStock");
+    t.innerHTML = "";
+    variantes.forEach(function(v) {
+        var f = t.insertRow();
+        f.insertCell(0).textContent = v.etiqueta;
+        f.insertCell(1).textContent = v.stock;
     });
 }
 
-function renderizarPorProducir() {
+async function recibirCompra(pedidoId) {
+    var sols = await obtenerRegistros("solicitudes_compra");
+    var sol = sols.find(function(s){ return s.pedido_id === pedidoId && s.estado === "pendiente"; });
+    if (!sol) { alert("No hay solicitud pendiente"); return; }
+    await llamarRPC("recibir_materia_compra", { p_solicitud_id: sol.id });
+    alert("Materia prima ingresada al inventario.");
+    await cargarPedidos();
+}
 
-    let tabla = document.getElementById("tablaPorProducir");
-    tabla.innerHTML = "";
+function abrirOrdenProduccion(pedidoId) {
+    document.getElementById("opPedidoId").value = pedidoId;
+    mostrarSeccionPedido("ordenProd");
+}
 
-    pedidos.forEach(function (item) {
-
-        let fila = tabla.insertRow();
-        fila.dataset.id = item.id;
-        fila.insertCell(0).textContent = item.pedido;
-        fila.insertCell(1).textContent = item.cliente;
-        fila.insertCell(2).textContent = item.producto;
-        fila.insertCell(3).textContent = item.talla;
-        fila.insertCell(4).textContent = item.cantidad;
-        fila.insertCell(5).textContent = item.fecha;
-        fila.insertCell(6).textContent = estadoPedido(item.estado);
-        fila.insertCell(7).innerHTML = botonesAcciones(item.id, "pedidos", "pedido");
+async function generarOrdenProduccion() {
+    var pedidoId = document.getElementById("opPedidoId").value;
+    var maqId = document.getElementById("opMaquiladora").value;
+    var dias = parseInt(document.getElementById("opDias").value) || 7;
+    if (!maqId) { alert("Seleccione maquiladora"); return; }
+    var ordenId = await llamarRPC("generar_orden_produccion", {
+        p_pedido_id: pedidoId, p_maquiladora_id: maqId, p_dias_plazo: dias
     });
-}
-
-function renderizarEntregas() {
-
-    let tabla = document.getElementById("tablaEntregasPedido");
-    tabla.innerHTML = "";
-
-    entregas.forEach(function (item) {
-
-        let fila = tabla.insertRow();
-        fila.dataset.id = item.id;
-        fila.insertCell(0).textContent = item.numero_pedido;
-        fila.insertCell(1).textContent = item.cliente;
-        fila.insertCell(2).textContent = item.fecha_entrega;
-        fila.insertCell(3).textContent = item.responsable;
-        fila.insertCell(4).textContent = item.estado === "entregado" ? "🟢 Entregado" : "🔵 En Ruta";
-        fila.insertCell(5).innerHTML = botonesAcciones(item.id, "entregas", "entrega");
-    });
-}
-
-// ========================================
-// EDITAR
-// ========================================
-
-function editarRegistro(id, tabla, seccion) {
-
-    let item = null;
-
-    if (seccion === "stock") {
-        item = stockDisponible.find(function (p) { return p.id === id; });
-        if (!item) return;
-        iniciarEdicion({
-            id: id, tabla: tabla, seccion: seccion,
-            btnId: "btnStock", btnCancelId: "btnCancelStock", btnTexto: "Agregar",
-            campos: [
-                { id: "stockProducto", valor: item.producto },
-                { id: "stockTalla", valor: item.talla },
-                { id: "stockColor", valor: item.color },
-                { id: "stockCantidad", valor: item.cantidad }
-            ]
-        });
-    }
-
-    if (seccion === "pedido") {
-        item = pedidos.find(function (p) { return p.id === id; });
-        if (!item) return;
-        iniciarEdicion({
-            id: id, tabla: tabla, seccion: seccion,
-            btnId: "btnPedido", btnCancelId: "btnCancelPedido", btnTexto: "Agregar",
-            campos: [
-                { id: "pedidoNumero", valor: item.pedido },
-                { id: "pedidoCliente", valor: item.cliente },
-                { id: "pedidoProducto", valor: item.producto },
-                { id: "pedidoTalla", valor: item.talla },
-                { id: "pedidoCantidad", valor: item.cantidad },
-                { id: "pedidoFecha", valor: item.fecha }
-            ]
-        });
-    }
-
-    if (seccion === "entrega") {
-        item = entregas.find(function (p) { return p.id === id; });
-        if (!item) return;
-        iniciarEdicion({
-            id: id, tabla: tabla, seccion: seccion,
-            btnId: "btnEntrega", btnCancelId: "btnCancelEntrega", btnTexto: "Agregar",
-            campos: [
-                { id: "entregaPedido", valor: item.numero_pedido },
-                { id: "entregaCliente", valor: item.cliente },
-                { id: "entregaFecha", valor: item.fecha_entrega },
-                { id: "entregaResponsable", valor: item.responsable }
-            ]
-        });
+    if (ordenId) {
+        alert("Orden de producción generada. Materia prima descontada.");
+        volverMenuPedidos();
+        await cargarPedidos();
     }
 }
 
-// ========================================
-// ELIMINAR
-// ========================================
-
-async function eliminarRegistroFila(id, tabla, seccion) {
-
-    if (!confirm("¿Desea eliminar este registro?")) {
-        return;
-    }
-
-    let eliminado = await eliminarRegistro(tabla, id);
-
-    if (!eliminado) {
-        return;
-    }
-
-    if (edicionActiva && edicionActiva.id === id) {
-        cancelarEdicion();
-    }
-
-    if (seccion === "stock") {
-        stockDisponible = stockDisponible.filter(function (p) { return p.id !== id; });
-        renderizarStock();
-    }
-
-    if (seccion === "pedido") {
-        pedidos = pedidos.filter(function (p) { return p.id !== id; });
-        renderizarPorProducir();
-    }
-
-    if (seccion === "entrega") {
-        entregas = entregas.filter(function (p) { return p.id !== id; });
-        renderizarEntregas();
-    }
-}
-
-// ========================================
-// STOCK DISPONIBLE
-// ========================================
-
-async function agregarStockDisponible() {
-
-    let producto = document.getElementById("stockProducto").value.trim();
-    let talla = document.getElementById("stockTalla").value;
-    let color = document.getElementById("stockColor").value.trim();
-    let cantidad = parseInt(document.getElementById("stockCantidad").value);
-
-    if (producto === "" || talla === "" || color === "" || isNaN(cantidad)) {
-        alert("Complete todos los campos");
-        return;
-    }
-
-    let datos = { producto: producto, talla: talla, color: color, cantidad: cantidad };
-
-    if (edicionActiva && edicionActiva.seccion === "stock") {
-
-        let actualizado = await actualizarRegistro("stock_disponible", edicionActiva.id, datos);
-        if (!actualizado) return;
-
-        let indice = stockDisponible.findIndex(function (p) { return p.id === edicionActiva.id; });
-        stockDisponible[indice] = actualizado;
-        renderizarStock();
-        cancelarEdicion();
-        return;
-    }
-
-    let registro = await insertarRegistro("stock_disponible", datos);
-    if (!registro) return;
-
-    stockDisponible.unshift(registro);
-    renderizarStock();
-    limpiarCampos(["stockProducto", "stockTalla", "stockColor", "stockCantidad"]);
-}
-
-// ========================================
-// PRODUCTOS POR PRODUCIR
-// ========================================
-
-async function agregarProductoProducir() {
-
-    let pedido = document.getElementById("pedidoNumero").value.trim();
-    let cliente = document.getElementById("pedidoCliente").value.trim();
-    let producto = document.getElementById("pedidoProducto").value.trim();
-    let talla = document.getElementById("pedidoTalla").value;
-    let cantidad = parseInt(document.getElementById("pedidoCantidad").value);
-    let fecha = document.getElementById("pedidoFecha").value;
-
-    if (pedido === "" || cliente === "" || producto === "" || talla === "" || isNaN(cantidad) || fecha === "") {
-        alert("Complete todos los campos");
-        return;
-    }
-
-    let datos = {
-        numero: pedido,
-        cliente: cliente,
-        producto: producto,
-        talla: talla,
-        cantidad: cantidad,
-        fecha: fecha
-    };
-
-    if (edicionActiva && edicionActiva.seccion === "pedido") {
-
-        let actualizado = await actualizarRegistro("pedidos", edicionActiva.id, datos);
-        if (!actualizado) return;
-
-        let indice = pedidos.findIndex(function (p) { return p.id === edicionActiva.id; });
-        pedidos[indice] = normalizarPedidos([actualizado])[0];
-        renderizarPorProducir();
-        cancelarEdicion();
-        return;
-    }
-
-    datos.estado = "pendiente";
-
-    let registro = await insertarRegistro("pedidos", datos);
-    if (!registro) return;
-
-    pedidos.unshift(normalizarPedidos([registro])[0]);
-    renderizarPorProducir();
-    limpiarCampos(["pedidoNumero", "pedidoCliente", "pedidoProducto", "pedidoTalla", "pedidoCantidad", "pedidoFecha"]);
-}
-
-// ========================================
-// ENTREGAS
-// ========================================
-
-async function agregarEntregaPedido() {
-
-    let pedido = document.getElementById("entregaPedido").value.trim();
-    let cliente = document.getElementById("entregaCliente").value.trim();
-    let fecha = document.getElementById("entregaFecha").value;
-    let responsable = document.getElementById("entregaResponsable").value.trim();
-
-    if (pedido === "" || cliente === "" || fecha === "" || responsable === "") {
-        alert("Complete todos los campos");
-        return;
-    }
-
-    let datos = {
-        numero_pedido: pedido,
-        cliente: cliente,
-        fecha_entrega: fecha,
-        responsable: responsable
-    };
-
-    if (edicionActiva && edicionActiva.seccion === "entrega") {
-
-        let actualizado = await actualizarRegistro("entregas", edicionActiva.id, datos);
-        if (!actualizado) return;
-
-        let indice = entregas.findIndex(function (p) { return p.id === edicionActiva.id; });
-        entregas[indice] = actualizado;
-        renderizarEntregas();
-        cancelarEdicion();
-        return;
-    }
-
-    datos.estado = "entregado";
-
-    let registro = await insertarRegistro("entregas", datos);
-    if (!registro) return;
-
-    entregas.unshift(registro);
-    renderizarEntregas();
-    limpiarCampos(["entregaPedido", "entregaCliente", "entregaFecha", "entregaResponsable"]);
+async function registrarEntrega(pedidoId) {
+    var sesion = JSON.parse(sessionStorage.getItem("martin_sesion"));
+    await insertarRegistro("entregas", { pedido_id: pedidoId, responsable_id: sesion.id, estado: "entregado" });
+    await actualizarRegistro("pedidos", pedidoId, { estado: "entregado" });
+    alert("Entrega registrada.");
+    await cargarPedidos();
 }

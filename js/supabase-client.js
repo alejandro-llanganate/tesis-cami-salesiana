@@ -4,136 +4,140 @@
     var supabaseClient = null;
 
     function initSupabase() {
-
         if (!window.supabase || !window.supabase.createClient) {
             console.error("Supabase SDK no cargado.");
             return null;
         }
-
         if (!supabaseClient) {
-            supabaseClient = window.supabase.createClient(
-                window.SUPABASE_URL,
-                window.SUPABASE_KEY
-            );
+            supabaseClient = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_KEY);
         }
-
         return supabaseClient;
     }
 
-    function manejarErrorSupabase(error, accion) {
-
+    function manejarError(error, accion) {
         console.error("Supabase:", error);
-
-        var mensaje = "Error al " + accion + ": " + error.message;
-
-        if (error.message.indexOf("does not exist") !== -1 || error.code === "42P01") {
-            mensaje = "Las tablas no existen aún. Ejecuta supabase/martin_company.sql en el SQL Editor de Supabase.";
-        }
-
-        alert(mensaje);
+        var msg = "Error al " + accion + ": " + error.message;
+        if (error.message.indexOf("does not exist") !== -1) alert("Ejecuta supabase/martin_company.sql en Supabase.");
+        else alert(msg);
     }
 
-    window.obtenerRegistros = async function (tabla) {
-
-        var client = initSupabase();
-
-        if (!client) {
-            return [];
+    window.obtenerRegistros = async function (tabla, select) {
+        var c = initSupabase();
+        if (!c) return [];
+        var q = c.from(tabla).select(select || "*");
+        if (tabla !== "criterios_calidad" && tabla !== "colores" && tabla !== "tallas") {
+            q = q.order("created_at", { ascending: false });
         }
-
-        var resultado = await client
-            .from(tabla)
-            .select("*")
-            .order("created_at", { ascending: false });
-
-        if (resultado.error) {
-            manejarErrorSupabase(resultado.error, "consultar " + tabla);
-            return [];
-        }
-
-        return resultado.data || [];
+        var r = await q;
+        if (r.error) { manejarError(r.error, "consultar " + tabla); return []; }
+        return r.data || [];
     };
 
     window.insertarRegistro = async function (tabla, registro) {
-
-        var client = initSupabase();
-
-        if (!client) {
-            return null;
-        }
-
-        var resultado = await client
-            .from(tabla)
-            .insert([registro])
-            .select()
-            .single();
-
-        if (resultado.error) {
-            manejarErrorSupabase(resultado.error, "guardar en " + tabla);
-            return null;
-        }
-
-        return resultado.data;
-    };
-
-    window.eliminarRegistro = async function (tabla, id) {
-
-        var client = initSupabase();
-
-        if (!client) {
-            return false;
-        }
-
-        var resultado = await client
-            .from(tabla)
-            .delete()
-            .eq("id", id);
-
-        if (resultado.error) {
-            manejarErrorSupabase(resultado.error, "eliminar de " + tabla);
-            return false;
-        }
-
-        return true;
+        var c = initSupabase();
+        if (!c) return null;
+        var r = await c.from(tabla).insert([registro]).select().single();
+        if (r.error) { manejarError(r.error, "guardar"); return null; }
+        return r.data;
     };
 
     window.actualizarRegistro = async function (tabla, id, registro) {
-
-        var client = initSupabase();
-
-        if (!client) {
-            return null;
-        }
-
-        var resultado = await client
-            .from(tabla)
-            .update(registro)
-            .eq("id", id)
-            .select()
-            .single();
-
-        if (resultado.error) {
-            manejarErrorSupabase(resultado.error, "actualizar en " + tabla);
-            return null;
-        }
-
-        return resultado.data;
+        var c = initSupabase();
+        if (!c) return null;
+        var r = await c.from(tabla).update(registro).eq("id", id).select().single();
+        if (r.error) { manejarError(r.error, "actualizar"); return null; }
+        return r.data;
     };
 
-    window.normalizarPedidos = function (lista) {
+    window.eliminarRegistro = async function (tabla, id) {
+        var c = initSupabase();
+        if (!c) return false;
+        var r = await c.from(tabla).delete().eq("id", id);
+        if (r.error) { manejarError(r.error, "eliminar"); return false; }
+        return true;
+    };
 
-        return lista.map(function (item) {
+    window.llamarRPC = async function (nombre, params) {
+        var c = initSupabase();
+        if (!c) return null;
+        var r = await c.rpc(nombre, params || {});
+        if (r.error) { manejarError(r.error, nombre); return null; }
+        return r.data;
+    };
+
+    window.obtenerVariantes = async function () {
+        var c = initSupabase();
+        if (!c) return [];
+        var r = await c.from("producto_variantes").select(
+            "id, precio, stock_terminado, productos(nombre), colores(nombre), tallas(nombre)"
+        );
+        if (r.error) { manejarError(r.error, "variantes"); return []; }
+        return (r.data || []).map(function (v) {
             return {
-                id: item.id,
-                pedido: item.numero,
-                cliente: item.cliente,
-                producto: item.producto,
-                talla: item.talla,
-                cantidad: item.cantidad,
-                fecha: item.fecha,
-                estado: item.estado
+                id: v.id,
+                producto: v.productos.nombre,
+                color: v.colores.nombre,
+                talla: v.tallas.nombre,
+                precio: v.precio,
+                stock: v.stock_terminado,
+                etiqueta: v.productos.nombre + " | " + v.colores.nombre + " | " + v.tallas.nombre
             };
         });
+    };
+
+    window.obtenerPedidosCompletos = async function () {
+        var c = initSupabase();
+        if (!c) return [];
+        var r = await c.from("pedidos").select(
+            "*, clientes(nombre), pedido_items(id, cantidad, producto_variantes(id, productos(nombre), colores(nombre), tallas(nombre)))"
+        ).order("created_at", { ascending: false });
+        if (r.error) { manejarError(r.error, "pedidos"); return []; }
+        return r.data || [];
+    };
+
+    window.obtenerOrdenes = async function () {
+        var c = initSupabase();
+        if (!c) return [];
+        var r = await c.from("ordenes_produccion").select(
+            "*, pedidos(numero, estado), perfiles!ordenes_produccion_maquiladora_id_fkey(nombre)"
+        ).order("created_at", { ascending: false });
+        if (r.error) { manejarError(r.error, "ordenes"); return []; }
+        return r.data || [];
+    };
+
+    window.obtenerKPIs = async function () {
+        var c = initSupabase();
+        if (!c) return {};
+        var r = await c.from("vista_kpis").select("*").single();
+        return r.data || {};
+    };
+
+    window.obtenerPerfiles = async function (rol) {
+        var c = initSupabase();
+        if (!c) return [];
+        var q = c.from("perfiles").select("*").eq("activo", true);
+        if (rol) q = q.eq("rol", rol);
+        var r = await q;
+        return r.data || [];
+    };
+
+    window.requerirSesion = function () {
+        var sesion = sessionStorage.getItem("martin_sesion");
+        if (!sesion) {
+            window.location.href = "login.html";
+            return null;
+        }
+        return JSON.parse(sesion);
+    };
+
+    window.esSupervisora = function () {
+        var s = window.requerirSesion();
+        return s && s.rol === "supervisora";
+    };
+
+    window.cerrarSesion = function () {
+        sessionStorage.removeItem("martin_sesion");
+        window.location.href = "login.html";
     };
 
 })();

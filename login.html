@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - MARTIN Company</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="login-body">
+    <div class="login-card formulario">
+        <img src="img/LOGO.jpeg" class="logo" alt="Logo">
+        <h1>MARTIN Company</h1>
+        <p>Sistema de Gestión de Producción</p>
+        <br>
+        <label>Seleccione su perfil:</label>
+        <select id="perfilSelect">
+            <option value="">-- Seleccione --</option>
+        </select>
+        <br><br>
+        <button onclick="iniciarSesion()">Ingresar al sistema</button>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <script src="js/supabase-config.js?v=4"></script>
+    <script src="js/supabase-client.js?v=4"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", async function () {
+            var perfiles = await obtenerPerfiles();
+            var select = document.getElementById("perfilSelect");
+            perfiles.forEach(function (p) {
+                var opt = document.createElement("option");
+                opt.value = JSON.stringify({ id: p.id, nombre: p.nombre, rol: p.rol, email: p.email });
+                opt.textContent = p.nombre + " (" + (p.rol === "supervisora" ? "Supervisora" : "Maquiladora") + ")";
+                select.appendChild(opt);
+            });
+        });
+        function iniciarSesion() {
+            var val = document.getElementById("perfilSelect").value;
+            if (!val) { alert("Seleccione un perfil"); return; }
+            sessionStorage.setItem("martin_sesion", val);
+            window.location.href = "index.html";
+        }
+    </script>
+</body>
+</html>

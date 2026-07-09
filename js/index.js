@@ -1,32 +1,15 @@
 
-// ========================================
-// RESUMEN OPERATIVO DESDE SUPABASE
-// ========================================
-
-document.addEventListener("DOMContentLoaded", function () {
-    cargarResumenDashboard();
+document.addEventListener("DOMContentLoaded", async function () {
+  if (!sessionStorage.getItem("martin_sesion")) {
+    window.location.href = "login.html";
+    return;
+  }
+  configurarSidebar();
+  var kpis = await obtenerKPIs();
+  document.getElementById("kpiActivos").textContent = kpis.pedidos_activos || 0;
+  document.getElementById("kpiOrdenes").textContent = kpis.ordenes_activas || 0;
+  document.getElementById("kpiAlertas").textContent = kpis.alertas_activas || 0;
+  document.getElementById("kpiStock").textContent = kpis.stock_total || 0;
+  document.getElementById("kpiCalidad").textContent = kpis.inspecciones_aprobadas || 0;
+  document.getElementById("kpiEntregas").textContent = kpis.entregas_realizadas || 0;
 });
-
-async function cargarResumenDashboard() {
-
-    let productosTerminados = await obtenerRegistros("productos_terminados");
-    let productosProceso = await obtenerRegistros("productos_proceso");
-    let pedidosRaw = await obtenerRegistros("pedidos");
-    let pedidos = normalizarPedidos(pedidosRaw);
-
-    let totalTerminados = productosTerminados.reduce(function (total, item) {
-        return total + Number(item.cantidad);
-    }, 0);
-
-    let totalProceso = productosProceso.reduce(function (total, item) {
-        return total + Number(item.cantidad);
-    }, 0);
-
-    let pedidosPendientes = pedidos.filter(function (item) {
-        return item.estado === "pendiente";
-    });
-
-    document.getElementById("totalTerminados").textContent = totalTerminados;
-    document.getElementById("totalProceso").textContent = totalProceso;
-    document.getElementById("totalPedidos").textContent = pedidosPendientes.length;
-}

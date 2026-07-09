@@ -26,17 +26,7 @@
 
         <h2>MARTIN Company</h2>
 
-        <ul>
-
-            <li><a href="index.html">Inicio</a></li>
-
-            <li><a href="inventario.html">Inventario</a></li>
-
-            <li><a href="pedidos.html">Pedidos</a></li>
-
-            <li><a href="reportes.html">Reportes</a></li>
-
-        </ul>
+        <ul></ul>
 
     </div>
 
@@ -88,6 +78,16 @@
 
             </div>
 
+            <div class="card" onclick="window.location.href='produccion.html'" style="cursor:pointer;">
+                <h3>🧵 Producción</h3>
+                <p>Órdenes de producción, avance y alertas de retraso.</p>
+            </div>
+
+            <div class="card" onclick="window.location.href='calidad.html'" style="cursor:pointer;">
+                <h3>🔍 Calidad</h3>
+                <p>Inspección con 10 criterios. Al aprobar suma al stock.</p>
+            </div>
+
             <div class="card"
                  onclick="window.location.href='reportes.html'"
                  style="cursor:pointer;">
@@ -104,33 +104,20 @@
 
         <br><br>
 
-        <!-- RESUMEN OPERATIVO -->
+        <div class="grid-kpi bloque">
+            <div class="card formulario card-kpi"><h3 id="kpiActivos">0</h3><p>Pedidos activos</p></div>
+            <div class="card formulario card-kpi"><h3 id="kpiOrdenes">0</h3><p>Órdenes producción</p></div>
+            <div class="card formulario card-kpi"><h3 id="kpiAlertas">0</h3><p>Alertas retraso</p></div>
+            <div class="card formulario card-kpi"><h3 id="kpiStock">0</h3><p>Stock terminado</p></div>
+            <div class="card formulario card-kpi"><h3 id="kpiCalidad">0</h3><p>Aprobados calidad</p></div>
+            <div class="card formulario card-kpi"><h3 id="kpiEntregas">0</h3><p>Entregas</p></div>
+        </div>
+
+        <br><br>
 
         <div class="formulario">
-
-            <h2>Resumen Operativo</h2>
-
-            <br>
-
-            <p>
-                📦 Productos Terminados:
-                <strong id="totalTerminados">0</strong>
-            </p>
-
-            <br>
-
-            <p>
-                🧵 Productos en Proceso:
-                <strong id="totalProceso">0</strong>
-            </p>
-
-            <br>
-
-            <p>
-                📋 Pedidos Pendientes:
-                <strong id="totalPedidos">0</strong>
-            </p>
-
+            <h2>Flujo del Proceso</h2>
+            <p>📝 Pedido → 📦 Verificar stock → 🛒 Compra (si falta) → 🧵 Producción → 🔍 Calidad → 📦 Stock → 🚚 Entrega → 📊 KPIs</p>
         </div>
 
         <br><br>
@@ -170,9 +157,10 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-    <script src="js/supabase-config.js?v=2"></script>
-    <script src="js/supabase-client.js?v=2"></script>
-    <script src="js/index.js?v=2"></script>
+    <script src="js/supabase-config.js?v=4"></script>
+    <script src="js/supabase-client.js?v=4"></script>
+    <script src="js/catalogos.js?v=4"></script>
+    <script src="js/index.js?v=4"></script>
 
 </body>
 
