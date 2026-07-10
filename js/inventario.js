@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             f.insertCell(2).textContent = m.precio;
             f.insertCell(3).textContent = m.stock_actual + " " + (m.unidad || "m");
             f.insertCell(4).textContent = obtenerEstado(Math.floor(m.stock_actual));
-            f.insertCell(5).innerHTML = '<button class="btn-editar" onclick="editarMateria(\'' + m.id + '\')">Editar</button>';
+            f.insertCell(5).innerHTML = '<button class="btn btn-sm btn-outline-primary" onclick="editarMateria(\'' + m.id + '\')">Editar</button>';
         }
     });
 
@@ -50,7 +50,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             f.insertCell(1).textContent = s.tipo;
             f.insertCell(2).textContent = s.stock_actual;
             f.insertCell(3).textContent = obtenerEstado(Math.floor(s.stock_actual));
-            f.insertCell(4).innerHTML = '<button class="btn-editar" onclick="editarSuministro(\'' + s.id + '\')">Editar</button>';
+            f.insertCell(4).innerHTML = '<button class="btn btn-sm btn-outline-primary" onclick="editarSuministro(\'' + s.id + '\')">Editar</button>';
         }
     });
 
@@ -69,17 +69,17 @@ async function cargarDatos() {
 }
 
 function mostrarSeccion(id) {
-    document.getElementById("menuInventario").style.display = "none";
+    document.getElementById("menuInventario").classList.add("d-none");
     ["terminados", "materia", "suministros"].forEach(function (s) {
-        document.getElementById(s).style.display = "none";
+        document.getElementById(s).classList.add("d-none");
     });
-    document.getElementById(id).style.display = "block";
+    document.getElementById(id).classList.remove("d-none");
 }
 
 function volverMenu() {
-    document.getElementById("menuInventario").style.display = "grid";
+    document.getElementById("menuInventario").classList.remove("d-none");
     ["terminados", "materia", "suministros"].forEach(function (s) {
-        document.getElementById(s).style.display = "none";
+        document.getElementById(s).classList.add("d-none");
     });
 }
 

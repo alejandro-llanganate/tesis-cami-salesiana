@@ -20,15 +20,15 @@ document.addEventListener("DOMContentLoaded", async function () {
             f.insertCell(3).innerHTML = badgeEstado(p.estado);
             var acciones = "";
             if (p.estado === "materia_recibida") {
-                acciones += '<button class="btn-op" onclick="abrirOrdenProduccion(\'' + p.id + '\')">Generar OP</button> ';
+                acciones += '<button class="btn btn-sm btn-teal btn-info text-white me-1" onclick="abrirOrdenProduccion(\'' + p.id + '\')">Generar OP</button>';
             }
             if (p.estado === "stock_insuficiente") {
-                acciones += '<button class="btn-compra" onclick="recibirCompra(\'' + p.id + '\')">Recibir materia</button> ';
+                acciones += '<button class="btn btn-sm btn-warning me-1" onclick="recibirCompra(\'' + p.id + '\')">Recibir materia</button>';
             }
             if (p.estado === "aprobado_calidad") {
-                acciones += '<button class="btn-entrega" onclick="registrarEntrega(\'' + p.id + '\')">Entregar</button>';
+                acciones += '<button class="btn btn-sm btn-success" onclick="registrarEntrega(\'' + p.id + '\')">Entregar</button>';
             }
-            f.insertCell(4).innerHTML = acciones || "<span class='texto-muted'>—</span>";
+            f.insertCell(4).innerHTML = acciones || '<span class="text-muted">—</span>';
         }
     });
 
@@ -69,19 +69,19 @@ async function cargarPedidos() {
 }
 
 function mostrarSeccionPedido(id) {
-    document.getElementById("menuPedidos").style.display = "none";
+    document.getElementById("menuPedidos").classList.add("d-none");
     ["registro", "lista", "stock", "compras", "ordenProd"].forEach(function (s) {
         var el = document.getElementById(s);
-        if (el) el.style.display = "none";
+        if (el) el.classList.add("d-none");
     });
-    document.getElementById(id).style.display = "block";
+    document.getElementById(id).classList.remove("d-none");
 }
 
 function volverMenuPedidos() {
-    document.getElementById("menuPedidos").style.display = "grid";
+    document.getElementById("menuPedidos").classList.remove("d-none");
     ["registro", "lista", "stock", "compras", "ordenProd"].forEach(function (s) {
         var el = document.getElementById(s);
-        if (el) el.style.display = "none";
+        if (el) el.classList.add("d-none");
     });
 }
 
@@ -135,7 +135,7 @@ function renderizarItemsTemp() {
         var f = t.insertRow();
         f.insertCell(0).textContent = it.etiqueta;
         f.insertCell(1).textContent = it.cantidad;
-        f.insertCell(2).innerHTML = '<button class="btn-eliminar" onclick="quitarItem(' + i + ')">Quitar</button>';
+        f.insertCell(2).innerHTML = '<button class="btn btn-sm btn-outline-danger" onclick="quitarItem(' + i + ')">Quitar</button>';
     });
 }
 

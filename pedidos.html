@@ -4,104 +4,137 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pedidos - MARTIN Company</title>
-    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/app.css?v=7">
 </head>
-<body>
-    <div class="sidebar"><ul></ul></div>
-    <div class="contenido">
-        <div class="page-header">
-            <div>
-                <h1>Gestión de Pedidos</h1>
-                <p class="subtitulo">Registro → Stock → Producción → Calidad → Entrega</p>
+<body class="app-body">
+    <div class="app-shell">
+        <aside id="appSidebar" class="app-sidebar"></aside>
+        <main class="app-main">
+            <div class="mb-4">
+                <h1 class="h3 text-primary fw-bold mb-1">Gestión de Pedidos</h1>
+                <p class="text-secondary mb-0">Registro → Stock → Producción → Calidad → Entrega</p>
             </div>
-        </div>
 
-        <div id="menuPedidos" class="cards">
-            <div class="card" onclick="mostrarSeccionPedido('registro')">
-                <h3>Nuevo pedido</h3>
-                <p>Registro digital con producto, talla, color y cliente.</p>
+            <div id="menuPedidos" class="row g-3">
+                <div class="col-md-4">
+                    <a href="#" class="module-card card" onclick="mostrarSeccionPedido('registro');return false;">
+                        <div class="card-body">
+                            <div class="icon-wrap"><i class="bi bi-plus-circle"></i></div>
+                            <h3 class="h6 fw-bold text-primary">Nuevo pedido</h3>
+                            <p class="small text-secondary mb-0">Registro con producto, talla, color y cliente.</p>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-md-4">
+                    <a href="#" class="module-card card" onclick="mostrarSeccionPedido('lista');return false;">
+                        <div class="card-body">
+                            <div class="icon-wrap"><i class="bi bi-list-check"></i></div>
+                            <h3 class="h6 fw-bold text-primary">Pedidos activos</h3>
+                            <p class="small text-secondary mb-0">Seguimiento del flujo de producción.</p>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-md-4">
+                    <a href="#" class="module-card card" onclick="mostrarSeccionPedido('stock');return false;">
+                        <div class="card-body">
+                            <div class="icon-wrap"><i class="bi bi-boxes"></i></div>
+                            <h3 class="h6 fw-bold text-primary">Stock disponible</h3>
+                            <p class="small text-secondary mb-0">Variantes CAMILA listas para entrega.</p>
+                        </div>
+                    </a>
+                </div>
             </div>
-            <div class="card" onclick="mostrarSeccionPedido('lista')">
-                <h3>Pedidos activos</h3>
-                <p>Seguimiento del flujo de producción.</p>
-            </div>
-            <div class="card" onclick="mostrarSeccionPedido('stock')">
-                <h3>Stock disponible</h3>
-                <p>Variantes CAMILA listas para entrega.</p>
-            </div>
-        </div>
 
-        <section id="registro" class="seccion-inventario" style="display:none;">
-            <button class="btn-volver" onclick="volverMenuPedidos()">← Regresar</button>
-            <h2>Registro de Pedido</h2>
-            <div class="formulario">
-                <input type="text" id="pedNumero" placeholder="N° Pedido (ej: PED-008)" aria-label="Número de pedido">
-                <select id="pedCliente" aria-label="Cliente"></select>
-                <input type="date" id="pedFecha" aria-label="Fecha">
-                <input type="date" id="pedFechaEntrega" aria-label="Fecha entrega">
-            </div>
-            <div class="formulario">
-                <h3>Ítems del pedido</h3>
-                <select id="pedProducto" onchange="onProductoChange()" aria-label="Producto"></select>
-                <select id="pedColor" onchange="onColorChange()" aria-label="Color"><option value="">Color</option></select>
-                <select id="pedTalla" aria-label="Talla"><option value="">Talla</option></select>
-                <input type="number" id="pedCantidad" placeholder="Cantidad" min="1" aria-label="Cantidad">
-                <button type="button" onclick="agregarItemPedido()">+ Agregar ítem</button>
-            </div>
-            <div class="tabla-wrap">
-                <table>
-                    <thead><tr><th>Producto</th><th>Cantidad</th><th></th></tr></thead>
-                    <tbody id="tablaItemsTemp"></tbody>
-                </table>
-            </div>
-            <br>
-            <button class="btn-exito" type="button" onclick="registrarPedido()">Registrar y verificar stock</button>
-        </section>
+            <section id="registro" class="d-none mt-3">
+                <button class="btn btn-outline-secondary btn-sm mb-3" onclick="volverMenuPedidos()"><i class="bi bi-arrow-left"></i> Regresar</button>
+                <div class="card section-card mb-3">
+                    <div class="card-body">
+                        <h2 class="h5 mb-3">Registro de pedido</h2>
+                        <div class="row g-2">
+                            <div class="col-md-3"><input class="form-control" type="text" id="pedNumero" placeholder="N° Pedido"></div>
+                            <div class="col-md-3"><select class="form-select" id="pedCliente"></select></div>
+                            <div class="col-md-3"><input class="form-control" type="date" id="pedFecha"></div>
+                            <div class="col-md-3"><input class="form-control" type="date" id="pedFechaEntrega"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card section-card mb-3">
+                    <div class="card-body">
+                        <h3 class="h6 mb-3">Ítems del pedido</h3>
+                        <div class="row g-2 align-items-end">
+                            <div class="col-md-3"><select class="form-select" id="pedProducto" onchange="onProductoChange()"></select></div>
+                            <div class="col-md-2"><select class="form-select" id="pedColor" onchange="onColorChange()"><option value="">Color</option></select></div>
+                            <div class="col-md-2"><select class="form-select" id="pedTalla"><option value="">Talla</option></select></div>
+                            <div class="col-md-2"><input class="form-control" type="number" id="pedCantidad" placeholder="Cantidad" min="1"></div>
+                            <div class="col-md-3"><button class="btn btn-primary w-100" type="button" onclick="agregarItemPedido()">Agregar ítem</button></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="table-panel mb-3">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead><tr><th>Producto</th><th>Cantidad</th><th></th></tr></thead>
+                            <tbody id="tablaItemsTemp"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <button class="btn btn-success" type="button" onclick="registrarPedido()">Registrar y verificar stock</button>
+            </section>
 
-        <section id="lista" class="seccion-inventario" style="display:none;">
-            <button class="btn-volver" onclick="volverMenuPedidos()">← Regresar</button>
-            <h2>Pedidos en proceso</h2>
-            <div class="tabla-wrap">
-                <table>
-                    <thead><tr><th>N° Pedido</th><th>Cliente</th><th>Fecha</th><th>Estado</th><th>Acciones</th></tr></thead>
-                    <tbody id="tablaPedidos"></tbody>
-                </table>
-                <div id="pagPedidos"></div>
-            </div>
-        </section>
+            <section id="lista" class="d-none mt-3">
+                <button class="btn btn-outline-secondary btn-sm mb-3" onclick="volverMenuPedidos()"><i class="bi bi-arrow-left"></i> Regresar</button>
+                <div class="table-panel">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead><tr><th>N° Pedido</th><th>Cliente</th><th>Fecha</th><th>Estado</th><th>Acciones</th></tr></thead>
+                            <tbody id="tablaPedidos"></tbody>
+                        </table>
+                    </div>
+                    <div id="pagPedidos"></div>
+                </div>
+            </section>
 
-        <section id="stock" class="seccion-inventario" style="display:none;">
-            <button class="btn-volver" onclick="volverMenuPedidos()">← Regresar</button>
-            <h2>Stock disponible</h2>
-            <div class="tabla-wrap">
-                <table>
-                    <thead><tr><th>Variante</th><th>Stock</th></tr></thead>
-                    <tbody id="tablaStock"></tbody>
-                </table>
-                <div id="pagStock"></div>
-            </div>
-        </section>
+            <section id="stock" class="d-none mt-3">
+                <button class="btn btn-outline-secondary btn-sm mb-3" onclick="volverMenuPedidos()"><i class="bi bi-arrow-left"></i> Regresar</button>
+                <div class="table-panel">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead><tr><th>Variante</th><th>Stock</th></tr></thead>
+                            <tbody id="tablaStock"></tbody>
+                        </table>
+                    </div>
+                    <div id="pagStock"></div>
+                </div>
+            </section>
 
-        <section id="ordenProd" class="seccion-inventario" style="display:none;">
-            <button class="btn-volver" onclick="volverMenuPedidos()">← Regresar</button>
-            <h2>Generar orden de producción</h2>
-            <input type="hidden" id="opPedidoId">
-            <div class="formulario">
-                <select id="opMaquiladora" aria-label="Maquiladora"></select>
-                <input type="number" id="opDias" value="7" placeholder="Días de plazo" aria-label="Días de plazo">
-                <button class="btn-op" type="button" onclick="generarOrdenProduccion()">Generar OP</button>
-            </div>
-        </section>
+            <section id="ordenProd" class="d-none mt-3">
+                <button class="btn btn-outline-secondary btn-sm mb-3" onclick="volverMenuPedidos()"><i class="bi bi-arrow-left"></i> Regresar</button>
+                <div class="card section-card">
+                    <div class="card-body">
+                        <h2 class="h5 mb-3">Generar orden de producción</h2>
+                        <input type="hidden" id="opPedidoId">
+                        <div class="row g-2">
+                            <div class="col-md-5"><select class="form-select" id="opMaquiladora"></select></div>
+                            <div class="col-md-3"><input class="form-control" type="number" id="opDias" value="7" placeholder="Días"></div>
+                            <div class="col-md-4"><button class="btn btn-info text-white w-100" type="button" onclick="generarOrdenProduccion()">Generar OP</button></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-    <script src="js/supabase-config.js?v=6"></script>
-    <script src="js/mock-data.js?v=6"></script>
-    <script src="js/supabase-client.js?v=6"></script>
-    <script src="js/ui.js?v=6"></script>
-    <script src="js/crud.js?v=6"></script>
-    <script src="js/catalogos.js?v=6"></script>
-    <script src="js/pedidos.js?v=6"></script>
+    <script src="js/supabase-config.js?v=7"></script>
+    <script src="js/mock-data.js?v=7"></script>
+    <script src="js/supabase-client.js?v=7"></script>
+    <script src="js/ui.js?v=7"></script>
+    <script src="js/crud.js?v=7"></script>
+    <script src="js/catalogos.js?v=7"></script>
+    <script src="js/pedidos.js?v=7"></script>
 </body>
 </html>

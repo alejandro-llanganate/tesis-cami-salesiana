@@ -108,18 +108,19 @@
             var desde = start + 1;
             var hasta = Math.min(start + estado.pageSize, estado.data.length);
             cont.innerHTML =
-                '<div class="paginacion" role="navigation" aria-label="Paginación de tabla">' +
+                '<div class="paginacion" role="navigation" aria-label="Paginación">' +
                 '<span class="paginacion-info">Mostrando ' + desde + "–" + hasta +
                 " de " + estado.data.length + "</span>" +
-                '<div class="paginacion-btns">' +
-                '<button type="button" class="btn-pag" data-pag="prev" ' +
+                '<div class="btn-group btn-group-sm">' +
+                '<button type="button" class="btn btn-outline-primary" data-pag="prev" ' +
                 (estado.page <= 1 ? "disabled" : "") + ">Anterior</button>" +
-                '<span class="paginacion-pagina">Pág. ' + estado.page + " / " + totalPages() + "</span>" +
-                '<button type="button" class="btn-pag" data-pag="next" ' +
+                '<button type="button" class="btn btn-outline-primary" disabled>Pág. ' +
+                estado.page + " / " + totalPages() + "</button>" +
+                '<button type="button" class="btn btn-outline-primary" data-pag="next" ' +
                 (estado.page >= totalPages() ? "disabled" : "") + ">Siguiente</button>" +
                 "</div></div>";
 
-            cont.querySelectorAll(".btn-pag").forEach(function (btn) {
+            cont.querySelectorAll("[data-pag]").forEach(function (btn) {
                 btn.onclick = function () {
                     if (btn.disabled) return;
                     if (btn.getAttribute("data-pag") === "prev") estado.page--;

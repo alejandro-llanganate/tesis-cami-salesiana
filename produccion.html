@@ -4,64 +4,82 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Producción - MARTIN Company</title>
-    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/app.css?v=7">
 </head>
-<body>
-    <div class="sidebar"><ul></ul></div>
-    <div class="contenido">
-        <div class="page-header">
-            <div>
-                <h1>Producción</h1>
-                <p class="subtitulo">Corte → Maquila → Avance → Control de calidad</p>
+<body class="app-body">
+    <div class="app-shell">
+        <aside id="appSidebar" class="app-sidebar"></aside>
+        <main class="app-main">
+            <div class="mb-4">
+                <h1 class="h3 text-primary fw-bold mb-1">Producción</h1>
+                <p class="text-secondary mb-0">Corte → Maquila → Avance → Control de calidad</p>
             </div>
-        </div>
 
-        <section class="bloque-seccion">
-            <h2>Alertas de retraso</h2>
-            <div class="tabla-wrap">
-                <table>
-                    <thead><tr><th>Tipo</th><th>Mensaje</th><th>Fecha</th></tr></thead>
-                    <tbody id="tablaAlertas"></tbody>
-                </table>
-                <div id="pagAlertas"></div>
+            <div class="card section-card mb-4">
+                <div class="card-body">
+                    <h2 class="h5 mb-3"><i class="bi bi-exclamation-triangle text-warning me-1"></i> Alertas de retraso</h2>
+                    <div class="table-panel">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead><tr><th>Tipo</th><th>Mensaje</th><th>Fecha</th></tr></thead>
+                                <tbody id="tablaAlertas"></tbody>
+                            </table>
+                        </div>
+                        <div id="pagAlertas"></div>
+                    </div>
+                </div>
             </div>
-        </section>
 
-        <section class="bloque-seccion">
-            <h2>Órdenes de producción</h2>
-            <div class="tabla-wrap">
-                <table>
-                    <thead>
-                        <tr><th>Pedido</th><th>Maquiladora</th><th>Estado</th><th>Avance</th><th>Fin planeada</th><th>Tiempo</th><th>Acciones</th></tr>
-                    </thead>
-                    <tbody id="tablaOrdenes"></tbody>
-                </table>
-                <div id="pagOrdenes"></div>
+            <div class="card section-card">
+                <div class="card-body">
+                    <h2 class="h5 mb-3">Órdenes de producción</h2>
+                    <div class="table-panel">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead>
+                                    <tr><th>Pedido</th><th>Maquiladora</th><th>Estado</th><th>Avance</th><th>Fin planeada</th><th>Tiempo</th><th>Acciones</th></tr>
+                                </thead>
+                                <tbody id="tablaOrdenes"></tbody>
+                            </table>
+                        </div>
+                        <div id="pagOrdenes"></div>
+                    </div>
+                </div>
             </div>
-        </section>
+        </main>
     </div>
 
-    <div id="modalAvance" class="modal-overlay" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="tituloAvance">
-        <div class="formulario modal-box">
-            <h3 id="tituloAvance">Registrar avance</h3>
-            <input type="hidden" id="avanceOrdenId">
-            <label for="avancePct">Porcentaje de avance (0-100)</label>
-            <input type="number" id="avancePct" min="0" max="100">
-            <label for="avanceDesc">Descripción</label>
-            <input type="text" id="avanceDesc" placeholder="Ej: Confección completada">
-            <br><br>
-            <button class="btn-exito" type="button" onclick="guardarAvance()">Guardar avance</button>
-            <button class="btn-cancelar" type="button" onclick="cerrarModal()">Cancelar</button>
+    <div id="modalAvance" class="modal-overlay" role="dialog" aria-modal="true">
+        <div class="card modal-box section-card">
+            <div class="card-body">
+                <h3 class="h5 mb-3">Registrar avance</h3>
+                <input type="hidden" id="avanceOrdenId">
+                <div class="mb-3">
+                    <label class="form-label" for="avancePct">Porcentaje (0-100)</label>
+                    <input class="form-control" type="number" id="avancePct" min="0" max="100">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="avanceDesc">Descripción</label>
+                    <input class="form-control" type="text" id="avanceDesc" placeholder="Ej: Confección completada">
+                </div>
+                <div class="d-flex gap-2 justify-content-end">
+                    <button class="btn btn-outline-secondary" type="button" onclick="cerrarModal()">Cancelar</button>
+                    <button class="btn btn-success" type="button" onclick="guardarAvance()">Guardar avance</button>
+                </div>
+            </div>
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-    <script src="js/supabase-config.js?v=6"></script>
-    <script src="js/mock-data.js?v=6"></script>
-    <script src="js/supabase-client.js?v=6"></script>
-    <script src="js/ui.js?v=6"></script>
-    <script src="js/catalogos.js?v=6"></script>
-    <script src="js/produccion.js?v=6"></script>
+    <script src="js/supabase-config.js?v=7"></script>
+    <script src="js/mock-data.js?v=7"></script>
+    <script src="js/supabase-client.js?v=7"></script>
+    <script src="js/ui.js?v=7"></script>
+    <script src="js/catalogos.js?v=7"></script>
+    <script src="js/produccion.js?v=7"></script>
 </body>
 </html>

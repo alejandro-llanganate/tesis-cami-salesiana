@@ -46,11 +46,11 @@ document.addEventListener("DOMContentLoaded", async function () {
 });
 
 async function mostrarSeccionReporte(id) {
-    document.getElementById("menuReportes").style.display = "none";
+    document.getElementById("menuReportes").classList.add("d-none");
     ["resumen", "inventario", "pedidos", "produccion"].forEach(function (s) {
-        document.getElementById(s).style.display = "none";
+        document.getElementById(s).classList.add("d-none");
     });
-    document.getElementById(id).style.display = "block";
+    document.getElementById(id).classList.remove("d-none");
 
     variantes = await obtenerVariantes();
     pedidos = await obtenerPedidosCompletos();
@@ -64,9 +64,9 @@ async function mostrarSeccionReporte(id) {
 }
 
 function volverMenuReportes() {
-    document.getElementById("menuReportes").style.display = "grid";
+    document.getElementById("menuReportes").classList.remove("d-none");
     ["resumen", "inventario", "pedidos", "produccion"].forEach(function (s) {
-        document.getElementById(s).style.display = "none";
+        document.getElementById(s).classList.add("d-none");
     });
 }
 

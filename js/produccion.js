@@ -19,10 +19,10 @@ document.addEventListener("DOMContentLoaded", async function () {
             f.insertCell(4).textContent = o.fecha_fin_planeada;
             var retraso = new Date(o.fecha_fin_planeada) < new Date() && o.porcentaje_avance < 100;
             f.insertCell(5).innerHTML = retraso
-                ? '<span class="badge badge-stock-insuficiente">Retraso</span>'
-                : '<span class="badge badge-completado">A tiempo</span>';
+                ? '<span class="badge text-bg-danger">Retraso</span>'
+                : '<span class="badge text-bg-success">A tiempo</span>';
             f.insertCell(6).innerHTML =
-                '<button class="btn-avance" onclick="abrirAvance(\'' + o.id + '\',' + o.porcentaje_avance + ')">Registrar avance</button>';
+                '<button class="btn btn-sm btn-primary" onclick="abrirAvance(\'' + o.id + '\',' + o.porcentaje_avance + ')">Registrar avance</button>';
         }
     });
 

@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             f.insertCell(1).textContent = o.perfiles ? o.perfiles.nombre : "";
             f.insertCell(2).textContent = o.porcentaje_avance + "%";
             f.insertCell(3).innerHTML =
-                '<button class="btn-calidad" onclick="iniciarInspeccion(\'' + o.id + '\')">Inspeccionar</button>';
+                '<button class="btn btn-sm btn-primary" onclick="iniciarInspeccion(\'' + o.id + '\')">Inspeccionar</button>';
         }
     });
 
@@ -42,20 +42,25 @@ function iniciarInspeccion(ordenId) {
 
     criterios.forEach(function (c) {
         var div = document.createElement("div");
-        div.className = "criterio-item formulario";
+        div.className = "criterio-item";
         div.innerHTML =
-            "<h4>" + c.codigo + ". " + c.parametro +
+            "<h4 class='h6'>" + c.codigo + ". " + c.parametro +
             ' <span class="badge-' + c.criticidad.toLowerCase() + '">' + c.criticidad + "</span></h4>" +
-            "<p><small>" + c.criterio + "</small></p>" +
-            "<p><small>Método: " + c.metodo + "</small></p>" +
-            '<label><input type="radio" name="crit_' + c.id + '" value="si" onchange="marcarCriterio(\'' + c.id + '\',true)"> Cumple</label> ' +
-            '<label><input type="radio" name="crit_' + c.id + '" value="no" onchange="marcarCriterio(\'' + c.id + '\',false)"> No cumple</label>' +
-            '<input type="text" id="obs_' + c.id + '" placeholder="Observación (opcional)" style="width:100%;margin-top:8px;">';
+            "<p class='small text-secondary mb-1'>" + c.criterio + "</p>" +
+            "<p class='small text-muted'>Método: " + c.metodo + "</p>" +
+            '<div class="form-check form-check-inline">' +
+            '<input class="form-check-input" type="radio" name="crit_' + c.id + '" id="si_' + c.id + '" onchange="marcarCriterio(\'' + c.id + '\',true)">' +
+            '<label class="form-check-label" for="si_' + c.id + '">Cumple</label></div>' +
+            '<div class="form-check form-check-inline">' +
+            '<input class="form-check-input" type="radio" name="crit_' + c.id + '" id="no_' + c.id + '" onchange="marcarCriterio(\'' + c.id + '\',false)">' +
+            '<label class="form-check-label" for="no_' + c.id + '">No cumple</label></div>' +
+            '<input class="form-control form-control-sm mt-2" type="text" id="obs_' + c.id + '" placeholder="Observación (opcional)">';
         cont.appendChild(div);
     });
 
-    document.getElementById("seccionInspeccion").style.display = "block";
-    window.scrollTo(0, document.getElementById("seccionInspeccion").offsetTop - 20);
+    var sec = document.getElementById("seccionInspeccion");
+    sec.classList.remove("d-none");
+    window.scrollTo(0, sec.offsetTop - 20);
 }
 
 function marcarCriterio(criterioId, cumple) {
@@ -92,7 +97,7 @@ async function guardarInspeccion() {
         if (resultado) {
             if (resultado.aprobada) mostrarExito(resultado.mensaje);
             else mostrarError(resultado.mensaje);
-            document.getElementById("seccionInspeccion").style.display = "none";
+            document.getElementById("seccionInspeccion").classList.add("d-none");
             await cargarOrdenesCalidad();
         }
     }, { titulo: "Finalizar inspección", okTexto: "Guardar inspección" });

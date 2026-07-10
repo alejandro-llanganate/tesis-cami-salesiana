@@ -1,0 +1,342 @@
+/* MARTIN Company — estilos sobre Bootstrap 5 */
+:root {
+  --mc-navy: #0b3a66;
+  --mc-navy-2: #0e4d86;
+  --mc-sidebar: 260px;
+  --mc-bg: #f4f7fb;
+  --bs-primary: #0b3a66;
+  --bs-primary-rgb: 11, 58, 102;
+  --bs-link-color: #0e4d86;
+}
+
+html, body { height: 100%; }
+
+body.app-body {
+  background: var(--mc-bg);
+  min-height: 100vh;
+}
+
+/* Layout */
+.app-shell {
+  display: flex;
+  min-height: 100vh;
+}
+
+.app-sidebar {
+  width: var(--mc-sidebar);
+  min-width: var(--mc-sidebar);
+  background: linear-gradient(180deg, #0b3a66 0%, #062744 100%);
+  color: #fff;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  z-index: 1030;
+  overflow-y: auto;
+}
+
+.app-main {
+  flex: 1;
+  min-width: 0;
+  padding: 1.5rem 1.75rem 2.5rem;
+}
+
+.app-brand {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  padding: 1.1rem 1rem;
+  border-bottom: 1px solid rgba(255,255,255,.12);
+}
+
+.app-brand img {
+  width: 42px;
+  height: 42px;
+  border-radius: .65rem;
+  object-fit: cover;
+  background: #fff;
+}
+
+.app-brand .brand-text {
+  line-height: 1.2;
+}
+
+.app-brand .brand-text strong {
+  display: block;
+  font-size: .95rem;
+  letter-spacing: .02em;
+}
+
+.app-brand .brand-text small {
+  color: rgba(255,255,255,.65);
+  font-size: .75rem;
+}
+
+.app-nav {
+  padding: .85rem .7rem;
+  flex: 1;
+}
+
+.app-nav .nav-link {
+  color: rgba(255,255,255,.82) !important;
+  border-radius: .65rem;
+  padding: .7rem .85rem;
+  margin-bottom: .2rem;
+  display: flex;
+  align-items: center;
+  gap: .65rem;
+  font-weight: 500;
+}
+
+.app-nav .nav-link:hover {
+  background: rgba(255,255,255,.1);
+  color: #fff !important;
+}
+
+.app-nav .nav-link.active {
+  background: rgba(79, 195, 247, .2);
+  color: #fff !important;
+  box-shadow: inset 3px 0 0 #4fc3f7;
+}
+
+.app-nav .nav-link i {
+  font-size: 1.05rem;
+  width: 1.25rem;
+  text-align: center;
+}
+
+.app-user {
+  border-top: 1px solid rgba(255,255,255,.12);
+  padding: 1rem;
+}
+
+.app-user .avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #4fc3f7;
+  color: #0b3a66;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.app-topbar {
+  display: none;
+  background: var(--mc-navy);
+  color: #fff;
+  padding: .75rem 1rem;
+  position: sticky;
+  top: 0;
+  z-index: 1040;
+}
+
+.app-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, .45);
+  z-index: 1025;
+}
+
+/* Cards / KPI */
+.kpi-card {
+  border: 0;
+  border-radius: 1rem;
+  box-shadow: 0 .25rem 1rem rgba(11, 58, 102, .06);
+  border-top: 3px solid var(--mc-navy-2);
+  height: 100%;
+}
+
+.kpi-card .kpi-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--mc-navy);
+  line-height: 1.1;
+}
+
+.kpi-card .kpi-label {
+  color: #64748b;
+  font-size: .82rem;
+  margin: 0;
+}
+
+.module-card {
+  border: 0;
+  border-radius: 1rem;
+  box-shadow: 0 .25rem 1rem rgba(11, 58, 102, .06);
+  height: 100%;
+  transition: transform .15s ease, box-shadow .15s ease;
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.module-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 .75rem 1.5rem rgba(11, 58, 102, .12);
+  color: inherit;
+}
+
+.module-card .icon-wrap {
+  width: 42px;
+  height: 42px;
+  border-radius: .75rem;
+  background: #e8f1fa;
+  color: var(--mc-navy);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  margin-bottom: .75rem;
+}
+
+.section-card {
+  border: 0;
+  border-radius: 1rem;
+  box-shadow: 0 .25rem 1rem rgba(11, 58, 102, .06);
+}
+
+.flow-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  background: #e8f1fa;
+  color: var(--mc-navy);
+  border-radius: 999px;
+  padding: .4rem .85rem;
+  font-size: .8rem;
+  font-weight: 600;
+  margin: .2rem;
+}
+
+/* Tables */
+.table-panel {
+  background: #fff;
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 .25rem 1rem rgba(11, 58, 102, .06);
+}
+
+.table-panel .table {
+  margin-bottom: 0;
+}
+
+.table-panel thead th {
+  background: var(--mc-navy);
+  color: #fff;
+  font-weight: 600;
+  font-size: .85rem;
+  border: 0;
+  white-space: nowrap;
+}
+
+.tabla-vacia {
+  text-align: center !important;
+  color: #94a3b8;
+  padding: 1.5rem !important;
+  font-style: italic;
+}
+
+.paginacion {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: .75rem;
+  padding: .85rem 1rem;
+  background: #f8fafc;
+  border-top: 1px solid #e2e8f0;
+}
+
+.paginacion-info { font-size: .85rem; color: #64748b; }
+
+/* Login */
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(145deg, #e8f1fa 0%, #f4f7fb 50%, #dbeafe 100%);
+  padding: 1.5rem;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 420px;
+  border: 0;
+  border-radius: 1.25rem;
+  box-shadow: 0 1rem 2.5rem rgba(11, 58, 102, .12);
+}
+
+.login-card .logo {
+  width: 88px;
+  height: 88px;
+  object-fit: cover;
+  border-radius: 1rem;
+}
+
+/* Modal avance */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, .45);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 1rem;
+}
+
+.modal-box {
+  width: 100%;
+  max-width: 460px;
+}
+
+/* Criterios calidad */
+.criterio-item {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: .85rem;
+  padding: 1rem;
+  margin-bottom: .85rem;
+}
+
+/* Badges de estado pedido */
+.badge-estado { font-weight: 600; }
+.badge-registrado { background: #e0e7ff !important; color: #3730a3 !important; }
+.badge-stock-insuficiente { background: #fee2e2 !important; color: #991b1b !important; }
+.badge-solicitud-compra { background: #ffedd5 !important; color: #9a3412 !important; }
+.badge-materia-recibida { background: #dbeafe !important; color: #1e40af !important; }
+.badge-en-produccion { background: #ede9fe !important; color: #5b21b6 !important; }
+.badge-control-calidad { background: #f3e8ff !important; color: #6b21a8 !important; }
+.badge-aprobado-calidad { background: #d1fae5 !important; color: #065f46 !important; }
+.badge-entregado, .badge-completado { background: #dcfce7 !important; color: #166534 !important; }
+.badge-cancelado { background: #f1f5f9 !important; color: #64748b !important; }
+
+.badge-alta { background: #e74c3c; color: #fff; padding: .15rem .45rem; border-radius: .35rem; font-size: .75rem; }
+.badge-media { background: #f39c12; color: #fff; padding: .15rem .45rem; border-radius: .35rem; font-size: .75rem; }
+.badge-baja { background: #27ae60; color: #fff; padding: .15rem .45rem; border-radius: .35rem; font-size: .75rem; }
+
+@media (max-width: 991.98px) {
+  .app-topbar { display: flex; align-items: center; gap: .75rem; }
+  .app-sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    transform: translateX(-105%);
+    transition: transform .25s ease;
+  }
+  body.nav-abierta .app-sidebar { transform: translateX(0); }
+  body.nav-abierta .app-backdrop { display: block; }
+  .app-shell { flex-direction: column; }
+  .app-main { padding: 1rem; }
+}
+
+@media print {
+  .app-sidebar, .app-topbar, .app-backdrop, .paginacion, .btn { display: none !important; }
+}

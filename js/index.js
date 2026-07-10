@@ -6,10 +6,8 @@ document.addEventListener("DOMContentLoaded", async function () {
     configurarSidebar();
 
     var sesion = JSON.parse(sessionStorage.getItem("martin_sesion"));
-    document.querySelectorAll("#modulosCards .card[data-rol]").forEach(function (card) {
-        if (card.getAttribute("data-rol") !== sesion.rol) {
-            card.style.display = "none";
-        }
+    document.querySelectorAll("#modulosCards [data-rol]").forEach(function (el) {
+        if (el.getAttribute("data-rol") !== sesion.rol) el.classList.add("d-none");
     });
 
     var kpis = await obtenerKPIs();
