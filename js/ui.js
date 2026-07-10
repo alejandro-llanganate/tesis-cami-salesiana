@@ -1,97 +1,146 @@
 /**
- * UI — toasts y confirmaciones (reemplaza alert nativo)
+ * UI — SweetAlert2 + toasts + paginación (heurísticas Nielsen)
  */
 (function () {
     "use strict";
 
-    function asegurarContenedor() {
-        var el = document.getElementById("toast-container");
-        if (el) return el;
-        el = document.createElement("div");
-        el.id = "toast-container";
-        el.setAttribute("aria-live", "polite");
-        document.body.appendChild(el);
-        return el;
+    var PAGE_SIZE = 8;
+
+    function swalDisponible() {
+        return typeof Swal !== "undefined";
     }
-
-    function icono(tipo) {
-        if (tipo === "exito") return "✓";
-        if (tipo === "error") return "!";
-        if (tipo === "aviso") return "i";
-        return "•";
-    }
-
-    window.mostrarToast = function (mensaje, tipo, duracion) {
-        tipo = tipo || "exito";
-        duracion = duracion == null ? 3200 : duracion;
-        var cont = asegurarContenedor();
-        var toast = document.createElement("div");
-        toast.className = "toast toast-" + tipo;
-        toast.innerHTML =
-            '<span class="toast-icon">' + icono(tipo) + "</span>" +
-            '<span class="toast-msg">' + mensaje + "</span>" +
-            '<button type="button" class="toast-cerrar" aria-label="Cerrar">&times;</button>';
-
-        cont.appendChild(toast);
-        requestAnimationFrame(function () {
-            toast.classList.add("toast-visible");
-        });
-
-        function cerrar() {
-            toast.classList.remove("toast-visible");
-            toast.classList.add("toast-saliendo");
-            setTimeout(function () {
-                if (toast.parentNode) toast.parentNode.removeChild(toast);
-            }, 280);
-        }
-
-        toast.querySelector(".toast-cerrar").onclick = cerrar;
-        if (duracion > 0) setTimeout(cerrar, duracion);
-        return toast;
-    };
 
     window.mostrarExito = function (mensaje) {
-        return window.mostrarToast(mensaje, "exito");
+        if (swalDisponible()) {
+            return Swal.fire({
+                icon: "success",
+                title: "Listo",
+                text: mensaje,
+                timer: 2600,
+                showConfirmButton: false,
+                toast: true,
+                position: "top-end"
+            });
+        }
+        alert(mensaje);
     };
 
     window.mostrarError = function (mensaje) {
-        return window.mostrarToast(mensaje, "error", 4500);
+        if (swalDisponible()) {
+            return Swal.fire({ icon: "error", title: "Error", text: mensaje, confirmButtonColor: "#003b73" });
+        }
+        alert(mensaje);
     };
 
     window.mostrarAviso = function (mensaje) {
-        return window.mostrarToast(mensaje, "aviso", 4000);
+        if (swalDisponible()) {
+            return Swal.fire({
+                icon: "warning",
+                title: "Atención",
+                text: mensaje,
+                confirmButtonColor: "#003b73"
+            });
+        }
+        alert(mensaje);
     };
 
-    window.confirmarAccion = function (mensaje, onOk) {
-        var overlay = document.createElement("div");
-        overlay.className = "confirm-overlay";
-        overlay.innerHTML =
-            '<div class="confirm-card">' +
-            '<p class="confirm-msg">' + mensaje + "</p>" +
-            '<div class="confirm-acciones">' +
-            '<button type="button" class="btn btn-secundario" data-accion="no">Cancelar</button>' +
-            '<button type="button" class="btn btn-peligro" data-accion="si">Confirmar</button>' +
-            "</div></div>";
-        document.body.appendChild(overlay);
-        requestAnimationFrame(function () {
-            overlay.classList.add("confirm-visible");
-        });
+    window.confirmarAccion = function (mensaje, onOk, opts) {
+        opts = opts || {};
+        if (swalDisponible()) {
+            Swal.fire({
+                title: opts.titulo || "¿Confirmar operación?",
+                text: mensaje,
+                icon: opts.icono || "question",
+                showCancelButton: true,
+                confirmButtonColor: opts.peligro ? "#c0392b" : "#003b73",
+                cancelButtonColor: "#64748b",
+                confirmButtonText: opts.okTexto || "Sí, continuar",
+                cancelButtonText: "Cancelar",
+                reverseButtons: true
+            }).then(function (r) {
+                if (r.isConfirmed && typeof onOk === "function") onOk();
+            });
+            return;
+        }
+        if (confirm(mensaje) && typeof onOk === "function") onOk();
+    };
 
-        function cerrar() {
-            overlay.classList.remove("confirm-visible");
-            setTimeout(function () {
-                if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
-            }, 200);
+    /** Paginación reutilizable para tablas */
+    window.crearPaginador = function (config) {
+        var estado = {
+            page: 1,
+            pageSize: config.pageSize || PAGE_SIZE,
+            data: [],
+            containerId: config.containerId,
+            tbodyId: config.tbodyId,
+            renderRow: config.renderRow,
+            emptyMsg: config.emptyMsg || "No hay registros para mostrar."
+        };
+
+        function totalPages() {
+            return Math.max(1, Math.ceil(estado.data.length / estado.pageSize));
         }
 
-        overlay.addEventListener("click", function (e) {
-            var btn = e.target.closest("[data-accion]");
-            if (!btn) {
-                if (e.target === overlay) cerrar();
+        function render() {
+            var tbody = document.getElementById(estado.tbodyId);
+            var cont = document.getElementById(estado.containerId);
+            if (!tbody) return;
+            tbody.innerHTML = "";
+
+            if (!estado.data.length) {
+                var tr = tbody.insertRow();
+                var td = tr.insertCell(0);
+                td.colSpan = 12;
+                td.className = "tabla-vacia";
+                td.textContent = estado.emptyMsg;
+                if (cont) cont.innerHTML = "";
                 return;
             }
-            if (btn.getAttribute("data-accion") === "si" && typeof onOk === "function") onOk();
-            cerrar();
-        });
+
+            if (estado.page > totalPages()) estado.page = totalPages();
+            var start = (estado.page - 1) * estado.pageSize;
+            var slice = estado.data.slice(start, start + estado.pageSize);
+            slice.forEach(function (item, i) {
+                estado.renderRow(item, tbody, start + i);
+            });
+
+            if (!cont) return;
+            var desde = start + 1;
+            var hasta = Math.min(start + estado.pageSize, estado.data.length);
+            cont.innerHTML =
+                '<div class="paginacion" role="navigation" aria-label="Paginación de tabla">' +
+                '<span class="paginacion-info">Mostrando ' + desde + "–" + hasta +
+                " de " + estado.data.length + "</span>" +
+                '<div class="paginacion-btns">' +
+                '<button type="button" class="btn-pag" data-pag="prev" ' +
+                (estado.page <= 1 ? "disabled" : "") + ">Anterior</button>" +
+                '<span class="paginacion-pagina">Pág. ' + estado.page + " / " + totalPages() + "</span>" +
+                '<button type="button" class="btn-pag" data-pag="next" ' +
+                (estado.page >= totalPages() ? "disabled" : "") + ">Siguiente</button>" +
+                "</div></div>";
+
+            cont.querySelectorAll(".btn-pag").forEach(function (btn) {
+                btn.onclick = function () {
+                    if (btn.disabled) return;
+                    if (btn.getAttribute("data-pag") === "prev") estado.page--;
+                    else estado.page++;
+                    render();
+                };
+            });
+        }
+
+        return {
+            setData: function (arr) {
+                estado.data = arr || [];
+                estado.page = 1;
+                render();
+            },
+            refresh: render,
+            getPage: function () { return estado.page; }
+        };
+    };
+
+    window.toggleSidebarMovil = function () {
+        document.body.classList.toggle("nav-abierta");
     };
 })();

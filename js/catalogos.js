@@ -51,53 +51,92 @@
 
     window.estadoPedidoTexto = function (estado) {
         var mapa = {
-            registrado: "📝 Registrado",
-            stock_insuficiente: "🔴 Stock insuficiente",
-            solicitud_compra: "🛒 Solicitud compra",
-            materia_recibida: "📦 Materia lista",
-            en_produccion: "🧵 En producción",
-            control_calidad: "🔍 Control calidad",
-            aprobado_calidad: "✅ Aprobado calidad",
-            empaquetado: "📦 Empaquetado",
-            entregado: "🚚 Entregado",
-            completado: "🟢 Completado",
-            cancelado: "❌ Cancelado"
+            registrado: "Registrado",
+            stock_insuficiente: "Stock insuficiente",
+            solicitud_compra: "Solicitud compra",
+            materia_recibida: "Materia lista",
+            en_produccion: "En producción",
+            control_calidad: "Control calidad",
+            aprobado_calidad: "Aprobado calidad",
+            empaquetado: "Empaquetado",
+            entregado: "Entregado",
+            completado: "Completado",
+            cancelado: "Cancelado"
         };
         return mapa[estado] || estado;
+    };
+
+    window.badgeEstado = function (estado) {
+        var cls = "badge badge-" + (estado || "default").replace(/_/g, "-");
+        return '<span class="' + cls + '">' + estadoPedidoTexto(estado) + "</span>";
     };
 
     window.configurarSidebar = function () {
         var sesion = requerirSesion();
         if (!sesion) return;
-        var nav = document.querySelector(".sidebar ul");
-        if (!nav) return;
+
+        var sidebar = document.querySelector(".sidebar");
+        if (!sidebar) return;
 
         var rol = sesion.rol;
+        var rolTxt = rol === "supervisora" ? "Supervisora" : "Maquiladora";
+        var page = (window.location.pathname.split("/").pop() || "index.html").toLowerCase();
+        if (!page || page === "") page = "index.html";
+
         var items = [
-            { href: "index.html", texto: "Inicio" },
-            { href: "inventario.html", texto: "Inventario", roles: ["supervisora"] },
-            { href: "pedidos.html", texto: "Pedidos", roles: ["supervisora"] },
-            { href: "produccion.html", texto: "Producción" },
-            { href: "calidad.html", texto: "Calidad", roles: ["supervisora"] },
-            { href: "reportes.html", texto: "Reportes", roles: ["supervisora"] }
+            { href: "index.html", texto: "Inicio", icon: "⌂", roles: null },
+            { href: "inventario.html", texto: "Inventario", icon: "▣", roles: ["supervisora"] },
+            { href: "pedidos.html", texto: "Pedidos", icon: "☰", roles: ["supervisora"] },
+            { href: "produccion.html", texto: "Producción", icon: "⚙", roles: null },
+            { href: "calidad.html", texto: "Calidad", icon: "◎", roles: ["supervisora"] },
+            { href: "reportes.html", texto: "Reportes", icon: "▦", roles: ["supervisora"] }
         ];
 
-        nav.innerHTML = "";
-        items.forEach(function (item) {
-            if (item.roles && item.roles.indexOf(rol) === -1) return;
-            var li = document.createElement("li");
-            var a = document.createElement("a");
-            a.href = item.href;
-            a.textContent = item.texto;
-            if (window.location.pathname.indexOf(item.href) !== -1) a.style.color = "#4fc3f7";
-            li.appendChild(a);
-            nav.appendChild(li);
-        });
+        var navHtml = items.filter(function (item) {
+            return !item.roles || item.roles.indexOf(rol) !== -1;
+        }).map(function (item) {
+            var active = page === item.href ? " active" : "";
+            return (
+                '<li><a class="nav-link' + active + '" href="' + item.href + '">' +
+                '<span class="nav-icon" aria-hidden="true">' + item.icon + "</span>" +
+                '<span class="nav-text">' + item.texto + "</span></a></li>"
+            );
+        }).join("");
 
-        var info = document.createElement("div");
-        info.className = "sesion-info";
-        info.innerHTML = "<small>" + sesion.nombre + "<br>(" + rol + ")</small><br><a href='#' onclick='cerrarSesion();return false;'>Cerrar sesión</a>";
-        document.querySelector(".sidebar").appendChild(info);
+        sidebar.innerHTML =
+            '<div class="sidebar-brand">' +
+            '<img src="img/LOGO.jpeg" class="logo" alt="Logo MARTIN Company">' +
+            "<div><strong>MARTIN</strong><small>Producción</small></div>" +
+            "</div>" +
+            '<nav class="sidebar-nav" aria-label="Navegación principal"><ul>' + navHtml + "</ul></nav>" +
+            '<div class="sesion-info">' +
+            '<div class="sesion-avatar" aria-hidden="true">' + (sesion.nombre || "?").charAt(0) + "</div>" +
+            '<div class="sesion-meta"><strong>' + sesion.nombre + "</strong>" +
+            "<small>" + rolTxt + "</small></div>" +
+            '<button type="button" class="btn-logout" onclick="confirmarCerrarSesion()">Salir</button>' +
+            "</div>";
+
+        // Barra superior móvil
+        if (!document.querySelector(".topbar")) {
+            var top = document.createElement("header");
+            top.className = "topbar";
+            top.innerHTML =
+                '<button type="button" class="btn-menu" onclick="toggleSidebarMovil()" aria-label="Abrir menú">☰</button>' +
+                '<span class="topbar-title">MARTIN Company</span>' +
+                '<span class="topbar-user">' + sesion.nombre.split(" ")[0] + "</span>";
+            document.body.insertBefore(top, document.body.firstChild);
+        }
+        if (!document.querySelector(".nav-backdrop")) {
+            var back = document.createElement("div");
+            back.className = "nav-backdrop";
+            back.onclick = function () { document.body.classList.remove("nav-abierta"); };
+            document.body.appendChild(back);
+        }
     };
 
+    window.confirmarCerrarSesion = function () {
+        confirmarAccion("Se cerrará la sesión actual.", function () {
+            cerrarSesion();
+        }, { titulo: "Cerrar sesión", okTexto: "Sí, salir" });
+    };
 })();

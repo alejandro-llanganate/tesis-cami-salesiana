@@ -7,52 +7,61 @@
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-    <div class="sidebar">
-        <img src="img/LOGO.jpeg" class="logo">
-        <h2>MARTIN Company</h2>
-        <ul></ul>
-    </div>
+    <div class="sidebar"><ul></ul></div>
     <div class="contenido">
-        <h1>Producción</h1>
-        <p class="subtitulo">Corte → Maquila → Avance → Control de calidad</p>
-
-        <div class="formulario">
-            <h3>⚠️ Alertas de retraso</h3>
-            <table>
-                <thead><tr><th>Tipo</th><th>Mensaje</th><th>Fecha</th></tr></thead>
-                <tbody id="tablaAlertas"></tbody>
-            </table>
+        <div class="page-header">
+            <div>
+                <h1>Producción</h1>
+                <p class="subtitulo">Corte → Maquila → Avance → Control de calidad</p>
+            </div>
         </div>
 
-        <h2>Órdenes de Producción</h2>
-        <table>
-            <thead>
-                <tr><th>Pedido</th><th>Maquiladora</th><th>Estado</th><th>Avance</th><th>Fin planeada</th><th>Tiempo</th><th>Acciones</th></tr>
-            </thead>
-            <tbody id="tablaOrdenes"></tbody>
-        </table>
+        <section class="bloque-seccion">
+            <h2>Alertas de retraso</h2>
+            <div class="tabla-wrap">
+                <table>
+                    <thead><tr><th>Tipo</th><th>Mensaje</th><th>Fecha</th></tr></thead>
+                    <tbody id="tablaAlertas"></tbody>
+                </table>
+                <div id="pagAlertas"></div>
+            </div>
+        </section>
+
+        <section class="bloque-seccion">
+            <h2>Órdenes de producción</h2>
+            <div class="tabla-wrap">
+                <table>
+                    <thead>
+                        <tr><th>Pedido</th><th>Maquiladora</th><th>Estado</th><th>Avance</th><th>Fin planeada</th><th>Tiempo</th><th>Acciones</th></tr>
+                    </thead>
+                    <tbody id="tablaOrdenes"></tbody>
+                </table>
+                <div id="pagOrdenes"></div>
+            </div>
+        </section>
     </div>
 
-    <div id="modalAvance" class="modal-overlay" style="display:none;">
+    <div id="modalAvance" class="modal-overlay" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="tituloAvance">
         <div class="formulario modal-box">
-            <h3>Registrar Avance de Producción</h3>
+            <h3 id="tituloAvance">Registrar avance</h3>
             <input type="hidden" id="avanceOrdenId">
-            <label>Porcentaje de avance (0-100):</label>
+            <label for="avancePct">Porcentaje de avance (0-100)</label>
             <input type="number" id="avancePct" min="0" max="100">
-            <label>Descripción:</label>
+            <label for="avanceDesc">Descripción</label>
             <input type="text" id="avanceDesc" placeholder="Ej: Confección completada">
             <br><br>
-            <button class="btn-exito" onclick="guardarAvance()">Guardar avance</button>
-            <button class="btn-cancelar" onclick="cerrarModal()">Cancelar</button>
+            <button class="btn-exito" type="button" onclick="guardarAvance()">Guardar avance</button>
+            <button class="btn-cancelar" type="button" onclick="cerrarModal()">Cancelar</button>
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-    <script src="js/supabase-config.js?v=5"></script>
-    <script src="js/mock-data.js?v=5"></script>
-    <script src="js/supabase-client.js?v=5"></script>
-    <script src="js/ui.js?v=5"></script>
-    <script src="js/catalogos.js?v=4"></script>
-    <script src="js/produccion.js?v=4"></script>
+    <script src="js/supabase-config.js?v=6"></script>
+    <script src="js/mock-data.js?v=6"></script>
+    <script src="js/supabase-client.js?v=6"></script>
+    <script src="js/ui.js?v=6"></script>
+    <script src="js/catalogos.js?v=6"></script>
+    <script src="js/produccion.js?v=6"></script>
 </body>
 </html>

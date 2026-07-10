@@ -7,56 +7,69 @@
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-    <div class="sidebar">
-        <img src="img/LOGO.jpeg" class="logo">
-        <h2>MARTIN Company</h2>
-        <ul></ul>
-    </div>
+    <div class="sidebar"><ul></ul></div>
     <div class="contenido">
-        <h1>Centro de Reportes</h1>
+        <div class="page-header">
+            <div>
+                <h1>Centro de Reportes</h1>
+                <p class="subtitulo">KPIs e información operativa</p>
+            </div>
+        </div>
+
         <div id="menuReportes" class="cards">
-            <div class="card" onclick="mostrarSeccionReporte('resumen')"><h3>📊 KPIs</h3></div>
-            <div class="card" onclick="mostrarSeccionReporte('inventario')"><h3>📦 Inventario</h3></div>
-            <div class="card" onclick="mostrarSeccionReporte('pedidos')"><h3>📋 Pedidos</h3></div>
-            <div class="card" onclick="mostrarSeccionReporte('produccion')"><h3>🧵 Producción</h3></div>
+            <div class="card" onclick="mostrarSeccionReporte('resumen')"><h3>KPIs</h3><p>Indicadores clave del sistema.</p></div>
+            <div class="card" onclick="mostrarSeccionReporte('inventario')"><h3>Inventario</h3><p>Stock por variante.</p></div>
+            <div class="card" onclick="mostrarSeccionReporte('pedidos')"><h3>Pedidos</h3><p>Estado de pedidos.</p></div>
+            <div class="card" onclick="mostrarSeccionReporte('produccion')"><h3>Producción</h3><p>Avance de órdenes.</p></div>
         </div>
 
         <section id="resumen" class="seccion-inventario" style="display:none;">
             <button class="btn-volver" onclick="volverMenuReportes()">← Regresar</button>
             <div class="grid-kpi">
-                <div class="card formulario card-kpi"><h3 id="rActivos">0</h3><p>Pedidos activos</p></div>
-                <div class="card formulario card-kpi"><h3 id="rOrdenes">0</h3><p>Órdenes</p></div>
-                <div class="card formulario card-kpi"><h3 id="rAlertas">0</h3><p>Alertas</p></div>
-                <div class="card formulario card-kpi"><h3 id="rStock">0</h3><p>Stock</p></div>
-                <div class="card formulario card-kpi"><h3 id="rCalidad">0</h3><p>Calidad OK</p></div>
-                <div class="card formulario card-kpi"><h3 id="rEntregas">0</h3><p>Entregas</p></div>
+                <div class="card card-kpi"><h3 id="rActivos">0</h3><p>Pedidos activos</p></div>
+                <div class="card card-kpi"><h3 id="rOrdenes">0</h3><p>Órdenes</p></div>
+                <div class="card card-kpi"><h3 id="rAlertas">0</h3><p>Alertas</p></div>
+                <div class="card card-kpi"><h3 id="rStock">0</h3><p>Stock</p></div>
+                <div class="card card-kpi"><h3 id="rCalidad">0</h3><p>Calidad OK</p></div>
+                <div class="card card-kpi"><h3 id="rEntregas">0</h3><p>Entregas</p></div>
             </div>
         </section>
 
         <section id="inventario" class="seccion-inventario" style="display:none;">
             <button class="btn-volver" onclick="volverMenuReportes()">← Regresar</button>
-            <table><thead><tr><th>Producto</th><th>Color</th><th>Talla</th><th>Stock</th></tr></thead>
-            <tbody id="tablaRepInv"></tbody></table>
+            <div class="tabla-wrap">
+                <table><thead><tr><th>Producto</th><th>Color</th><th>Talla</th><th>Stock</th></tr></thead>
+                <tbody id="tablaRepInv"></tbody></table>
+                <div id="pagRepInv"></div>
+            </div>
         </section>
 
         <section id="pedidos" class="seccion-inventario" style="display:none;">
             <button class="btn-volver" onclick="volverMenuReportes()">← Regresar</button>
-            <table><thead><tr><th>Pedido</th><th>Cliente</th><th>Estado</th></tr></thead>
-            <tbody id="tablaRepPed"></tbody></table>
+            <div class="tabla-wrap">
+                <table><thead><tr><th>Pedido</th><th>Cliente</th><th>Estado</th></tr></thead>
+                <tbody id="tablaRepPed"></tbody></table>
+                <div id="pagRepPed"></div>
+            </div>
         </section>
 
         <section id="produccion" class="seccion-inventario" style="display:none;">
             <button class="btn-volver" onclick="volverMenuReportes()">← Regresar</button>
-            <table><thead><tr><th>Pedido</th><th>Maquiladora</th><th>Avance</th><th>Estado</th></tr></thead>
-            <tbody id="tablaRepProd"></tbody></table>
+            <div class="tabla-wrap">
+                <table><thead><tr><th>Pedido</th><th>Maquiladora</th><th>Avance</th><th>Estado</th></tr></thead>
+                <tbody id="tablaRepProd"></tbody></table>
+                <div id="pagRepProd"></div>
+            </div>
         </section>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-    <script src="js/supabase-config.js?v=5"></script>
-    <script src="js/mock-data.js?v=5"></script>
-    <script src="js/supabase-client.js?v=5"></script>
-    <script src="js/ui.js?v=5"></script>
-    <script src="js/catalogos.js?v=4"></script>
-    <script src="js/reportes.js?v=4"></script>
+    <script src="js/supabase-config.js?v=6"></script>
+    <script src="js/mock-data.js?v=6"></script>
+    <script src="js/supabase-client.js?v=6"></script>
+    <script src="js/ui.js?v=6"></script>
+    <script src="js/catalogos.js?v=6"></script>
+    <script src="js/reportes.js?v=6"></script>
 </body>
 </html>

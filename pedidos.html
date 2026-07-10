@@ -7,95 +7,101 @@
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-    <div class="sidebar">
-        <img src="img/LOGO.jpeg" class="logo">
-        <h2>MARTIN Company</h2>
-        <ul></ul>
-    </div>
+    <div class="sidebar"><ul></ul></div>
     <div class="contenido">
-        <h1>Gestión de Pedidos</h1>
-        <p class="subtitulo">Registro → Verificación stock → Producción → Calidad → Entrega</p>
+        <div class="page-header">
+            <div>
+                <h1>Gestión de Pedidos</h1>
+                <p class="subtitulo">Registro → Stock → Producción → Calidad → Entrega</p>
+            </div>
+        </div>
 
         <div id="menuPedidos" class="cards">
             <div class="card" onclick="mostrarSeccionPedido('registro')">
-                <h3>📝 Nuevo Pedido</h3>
+                <h3>Nuevo pedido</h3>
                 <p>Registro digital con producto, talla, color y cliente.</p>
             </div>
             <div class="card" onclick="mostrarSeccionPedido('lista')">
-                <h3>📋 Pedidos Activos</h3>
+                <h3>Pedidos activos</h3>
                 <p>Seguimiento del flujo de producción.</p>
             </div>
             <div class="card" onclick="mostrarSeccionPedido('stock')">
-                <h3>📦 Stock Disponible</h3>
+                <h3>Stock disponible</h3>
                 <p>Variantes CAMILA listas para entrega.</p>
             </div>
         </div>
 
-        <!-- REGISTRO -->
         <section id="registro" class="seccion-inventario" style="display:none;">
             <button class="btn-volver" onclick="volverMenuPedidos()">← Regresar</button>
             <h2>Registro de Pedido</h2>
             <div class="formulario">
-                <input type="text" id="pedNumero" placeholder="N° Pedido (ej: PED-001)">
-                <select id="pedCliente"></select>
-                <input type="date" id="pedFecha">
-                <input type="date" id="pedFechaEntrega" placeholder="Fecha entrega">
+                <input type="text" id="pedNumero" placeholder="N° Pedido (ej: PED-008)" aria-label="Número de pedido">
+                <select id="pedCliente" aria-label="Cliente"></select>
+                <input type="date" id="pedFecha" aria-label="Fecha">
+                <input type="date" id="pedFechaEntrega" aria-label="Fecha entrega">
             </div>
             <div class="formulario">
                 <h3>Ítems del pedido</h3>
-                <select id="pedProducto" onchange="onProductoChange()"></select>
-                <select id="pedColor" onchange="onColorChange()"><option value="">Color</option></select>
-                <select id="pedTalla"><option value="">Talla</option></select>
-                <input type="number" id="pedCantidad" placeholder="Cantidad" min="1">
-                <button onclick="agregarItemPedido()">+ Agregar ítem</button>
+                <select id="pedProducto" onchange="onProductoChange()" aria-label="Producto"></select>
+                <select id="pedColor" onchange="onColorChange()" aria-label="Color"><option value="">Color</option></select>
+                <select id="pedTalla" aria-label="Talla"><option value="">Talla</option></select>
+                <input type="number" id="pedCantidad" placeholder="Cantidad" min="1" aria-label="Cantidad">
+                <button type="button" onclick="agregarItemPedido()">+ Agregar ítem</button>
             </div>
-            <table>
-                <thead><tr><th>Producto</th><th>Cantidad</th><th></th></tr></thead>
-                <tbody id="tablaItemsTemp"></tbody>
-            </table>
+            <div class="tabla-wrap">
+                <table>
+                    <thead><tr><th>Producto</th><th>Cantidad</th><th></th></tr></thead>
+                    <tbody id="tablaItemsTemp"></tbody>
+                </table>
+            </div>
             <br>
-            <button class="btn-exito" onclick="registrarPedido()">Registrar y verificar stock</button>
+            <button class="btn-exito" type="button" onclick="registrarPedido()">Registrar y verificar stock</button>
         </section>
 
-        <!-- LISTA -->
         <section id="lista" class="seccion-inventario" style="display:none;">
             <button class="btn-volver" onclick="volverMenuPedidos()">← Regresar</button>
-            <h2>Pedidos en Proceso</h2>
-            <table>
-                <thead><tr><th>N° Pedido</th><th>Cliente</th><th>Fecha</th><th>Estado</th><th>Acciones</th></tr></thead>
-                <tbody id="tablaPedidos"></tbody>
-            </table>
+            <h2>Pedidos en proceso</h2>
+            <div class="tabla-wrap">
+                <table>
+                    <thead><tr><th>N° Pedido</th><th>Cliente</th><th>Fecha</th><th>Estado</th><th>Acciones</th></tr></thead>
+                    <tbody id="tablaPedidos"></tbody>
+                </table>
+                <div id="pagPedidos"></div>
+            </div>
         </section>
 
-        <!-- STOCK -->
         <section id="stock" class="seccion-inventario" style="display:none;">
             <button class="btn-volver" onclick="volverMenuPedidos()">← Regresar</button>
-            <h2>Stock Disponible</h2>
-            <table>
-                <thead><tr><th>Variante</th><th>Stock</th></tr></thead>
-                <tbody id="tablaStock"></tbody>
-            </table>
+            <h2>Stock disponible</h2>
+            <div class="tabla-wrap">
+                <table>
+                    <thead><tr><th>Variante</th><th>Stock</th></tr></thead>
+                    <tbody id="tablaStock"></tbody>
+                </table>
+                <div id="pagStock"></div>
+            </div>
         </section>
 
-        <!-- ORDEN PRODUCCIÓN -->
         <section id="ordenProd" class="seccion-inventario" style="display:none;">
             <button class="btn-volver" onclick="volverMenuPedidos()">← Regresar</button>
-            <h2>Generar Orden de Producción</h2>
+            <h2>Generar orden de producción</h2>
             <input type="hidden" id="opPedidoId">
             <div class="formulario">
-                <select id="opMaquiladora"></select>
-                <input type="number" id="opDias" value="7" placeholder="Días de plazo">
-                <button class="btn-op" onclick="generarOrdenProduccion()">Generar OP (descuenta materia prima)</button>
+                <select id="opMaquiladora" aria-label="Maquiladora"></select>
+                <input type="number" id="opDias" value="7" placeholder="Días de plazo" aria-label="Días de plazo">
+                <button class="btn-op" type="button" onclick="generarOrdenProduccion()">Generar OP</button>
             </div>
         </section>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-    <script src="js/supabase-config.js?v=5"></script>
-    <script src="js/mock-data.js?v=5"></script>
-    <script src="js/supabase-client.js?v=5"></script>
-    <script src="js/ui.js?v=5"></script>
-    <script src="js/crud.js?v=4"></script>
-    <script src="js/catalogos.js?v=4"></script>
-    <script src="js/pedidos.js?v=4"></script>
+    <script src="js/supabase-config.js?v=6"></script>
+    <script src="js/mock-data.js?v=6"></script>
+    <script src="js/supabase-client.js?v=6"></script>
+    <script src="js/ui.js?v=6"></script>
+    <script src="js/crud.js?v=6"></script>
+    <script src="js/catalogos.js?v=6"></script>
+    <script src="js/pedidos.js?v=6"></script>
 </body>
 </html>

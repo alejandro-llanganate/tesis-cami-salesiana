@@ -1,169 +1,92 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
-
     <meta charset="UTF-8">
-
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
-
-    <title>MARTIN Company</title>
-
-    <link rel="stylesheet"
-          href="css/styles.css">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicio - MARTIN Company</title>
+    <link rel="stylesheet" href="css/styles.css">
 </head>
-
 <body>
-
-    <!-- SIDEBAR -->
-
     <div class="sidebar">
-
-        <img src="img/LOGO.jpeg"
-             class="logo">
-
-        <h2>MARTIN Company</h2>
-
         <ul></ul>
-
     </div>
-
-    <!-- CONTENIDO -->
 
     <div class="contenido">
-
-        <!-- BIENVENIDA -->
-
-        <div class="formulario">
-
-            <h1>Centro de Operaciones</h1>
-
-            <p>
-                Sistema de Gestión y Control de Producción de Uniformes Médicos
-            </p>
-
+        <div class="page-header">
+            <div>
+                <h1>Centro de Operaciones</h1>
+                <p class="subtitulo">Gestión y control de producción de uniformes médicos</p>
+            </div>
         </div>
 
-        <br>
-
-        <!-- MÓDULOS -->
-
-        <h2>Módulos del Sistema</h2>
-
-        <div class="cards">
-
-            <div class="card"
-                 onclick="window.location.href='inventario.html'"
-                 style="cursor:pointer;">
-
-                <h3>📦 Inventario</h3>
-
-                <p>
-                    Gestión de productos, materia prima y suministros.
-                </p>
-
+        <section class="bloque-seccion" aria-label="Indicadores">
+            <h2>Estado del sistema</h2>
+            <div class="grid-kpi">
+                <div class="card card-kpi"><h3 id="kpiActivos">0</h3><p>Pedidos activos</p></div>
+                <div class="card card-kpi"><h3 id="kpiOrdenes">0</h3><p>Órdenes producción</p></div>
+                <div class="card card-kpi"><h3 id="kpiAlertas">0</h3><p>Alertas retraso</p></div>
+                <div class="card card-kpi"><h3 id="kpiStock">0</h3><p>Stock terminado</p></div>
+                <div class="card card-kpi"><h3 id="kpiCalidad">0</h3><p>Aprobados calidad</p></div>
+                <div class="card card-kpi"><h3 id="kpiEntregas">0</h3><p>Entregas</p></div>
             </div>
+        </section>
 
-            <div class="card"
-                 onclick="window.location.href='pedidos.html'"
-                 style="cursor:pointer;">
-
-                <h3>📋 Pedidos</h3>
-
-                <p>
-                    Registro y control de pedidos de clientes.
-                </p>
-
+        <section class="bloque-seccion" aria-label="Módulos">
+            <h2>Módulos</h2>
+            <div class="cards" id="modulosCards">
+                <div class="card" data-rol="supervisora" onclick="location.href='inventario.html'">
+                    <h3>Inventario</h3>
+                    <p>Productos, materia prima y suministros.</p>
+                </div>
+                <div class="card" data-rol="supervisora" onclick="location.href='pedidos.html'">
+                    <h3>Pedidos</h3>
+                    <p>Registro, stock, compras y entregas.</p>
+                </div>
+                <div class="card" onclick="location.href='produccion.html'">
+                    <h3>Producción</h3>
+                    <p>Órdenes, avance y alertas de retraso.</p>
+                </div>
+                <div class="card" data-rol="supervisora" onclick="location.href='calidad.html'">
+                    <h3>Calidad</h3>
+                    <p>Inspección con 10 criterios.</p>
+                </div>
+                <div class="card" data-rol="supervisora" onclick="location.href='reportes.html'">
+                    <h3>Reportes</h3>
+                    <p>KPIs y exportación operativa.</p>
+                </div>
             </div>
+        </section>
 
-            <div class="card" onclick="window.location.href='produccion.html'" style="cursor:pointer;">
-                <h3>🧵 Producción</h3>
-                <p>Órdenes de producción, avance y alertas de retraso.</p>
+        <section class="bloque-seccion" aria-label="Flujo">
+            <h2>Flujo del proceso</h2>
+            <div class="flujo-pasos">
+                <span class="flujo-paso">1. Pedido</span><span class="flujo-flecha">→</span>
+                <span class="flujo-paso">2. Verificar stock</span><span class="flujo-flecha">→</span>
+                <span class="flujo-paso">3. Compra (si falta)</span><span class="flujo-flecha">→</span>
+                <span class="flujo-paso">4. Producción</span><span class="flujo-flecha">→</span>
+                <span class="flujo-paso">5. Calidad</span><span class="flujo-flecha">→</span>
+                <span class="flujo-paso">6. Entrega</span>
             </div>
+        </section>
 
-            <div class="card" onclick="window.location.href='calidad.html'" style="cursor:pointer;">
-                <h3>🔍 Calidad</h3>
-                <p>Inspección con 10 criterios. Al aprobar suma al stock.</p>
+        <section class="bloque-seccion" aria-label="Información">
+            <h2>Información general</h2>
+            <div class="info-grid">
+                <div class="info-item"><span>Empresa</span><strong>MARTIN Company</strong></div>
+                <div class="info-item"><span>Área</span><strong>Departamento de Producción</strong></div>
+                <div class="info-item"><span>Proyecto</span><strong>Transformación digital</strong></div>
+                <div class="info-item"><span>Versión</span><strong>2.0</strong></div>
             </div>
-
-            <div class="card"
-                 onclick="window.location.href='reportes.html'"
-                 style="cursor:pointer;">
-
-                <h3>📊 Reportes</h3>
-
-                <p>
-                    Análisis, KPIs y exportación de datos operativos.
-                </p>
-
-            </div>
-
-        </div>
-
-        <br><br>
-
-        <div class="grid-kpi bloque">
-            <div class="card formulario card-kpi"><h3 id="kpiActivos">0</h3><p>Pedidos activos</p></div>
-            <div class="card formulario card-kpi"><h3 id="kpiOrdenes">0</h3><p>Órdenes producción</p></div>
-            <div class="card formulario card-kpi"><h3 id="kpiAlertas">0</h3><p>Alertas retraso</p></div>
-            <div class="card formulario card-kpi"><h3 id="kpiStock">0</h3><p>Stock terminado</p></div>
-            <div class="card formulario card-kpi"><h3 id="kpiCalidad">0</h3><p>Aprobados calidad</p></div>
-            <div class="card formulario card-kpi"><h3 id="kpiEntregas">0</h3><p>Entregas</p></div>
-        </div>
-
-        <br><br>
-
-        <div class="formulario">
-            <h2>Flujo del Proceso</h2>
-            <p>📝 Pedido → 📦 Verificar stock → 🛒 Compra (si falta) → 🧵 Producción → 🔍 Calidad → 📦 Stock → 🚚 Entrega → 📊 KPIs</p>
-        </div>
-
-        <br><br>
-
-        <!-- INFORMACIÓN GENERAL -->
-
-        <div class="formulario">
-
-            <h2>Información General</h2>
-
-            <br>
-
-            <p>
-                <strong>Empresa:</strong> MARTIN Company
-            </p>
-
-            <br>
-
-            <p>
-                <strong>Área:</strong> Departamento de Producción
-            </p>
-
-            <br>
-
-            <p>
-                <strong>Proyecto:</strong> Transformación Digital del Departamento de Producción
-            </p>
-
-            <br>
-
-            <p>
-                <strong>Versión:</strong> 1.0
-            </p>
-
-        </div>
-
+        </section>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-    <script src="js/supabase-config.js?v=5"></script>
-    <script src="js/mock-data.js?v=5"></script>
-    <script src="js/supabase-client.js?v=5"></script>
-    <script src="js/ui.js?v=5"></script>
-    <script src="js/catalogos.js?v=4"></script>
-    <script src="js/index.js?v=4"></script>
-
+    <script src="js/supabase-config.js?v=6"></script>
+    <script src="js/mock-data.js?v=6"></script>
+    <script src="js/supabase-client.js?v=6"></script>
+    <script src="js/ui.js?v=6"></script>
+    <script src="js/catalogos.js?v=6"></script>
+    <script src="js/index.js?v=6"></script>
 </body>
-
 </html>

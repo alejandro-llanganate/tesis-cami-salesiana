@@ -135,6 +135,147 @@ class PDF(FPDF):
         self.line(x, y2, x - 2, y2 - 3)
         self.line(x, y2, x + 2, y2 - 3)
 
+    def flow_node(self, x, y, w, h, text, fill, border=None):
+        border = border or AZUL
+        self.set_fill_color(*fill)
+        self.set_draw_color(*border)
+        self.set_line_width(0.45)
+        self.rect(x, y, w, h, style="DF")
+        self.set_xy(x + 1, y + (h / 2) - 3.5)
+        self.set_font("ArialUni", "B", 7.5)
+        self.set_text_color(*AZUL)
+        self.multi_cell(w - 2, 3.5, text, align="C")
+
+    def flow_diamond(self, cx, cy, rw, rh, text, fill=(255, 248, 225)):
+        """Rombo de decisión centrado en (cx, cy)."""
+        pts = [(cx, cy - rh), (cx + rw, cy), (cx, cy + rh), (cx - rw, cy)]
+        self.set_fill_color(*fill)
+        self.set_draw_color(217, 119, 6)
+        self.set_line_width(0.45)
+        self.polygon(pts, style="DF")
+        self.set_xy(cx - rw + 3, cy - 4)
+        self.set_font("ArialUni", "B", 7)
+        self.set_text_color(146, 64, 14)
+        self.multi_cell(rw * 2 - 6, 3.2, text, align="C")
+
+    def flow_arrow_v(self, x, y1, y2, label=""):
+        self.set_draw_color(*AZUL_CLARO)
+        self.set_line_width(0.55)
+        self.line(x, y1, x, y2 - 1.5)
+        self.line(x, y2, x - 2.2, y2 - 3.5)
+        self.line(x, y2, x + 2.2, y2 - 3.5)
+        if label:
+            self.set_font("ArialUni", "", 6.5)
+            self.set_text_color(*GRIS)
+            self.set_xy(x + 3, (y1 + y2) / 2 - 2)
+            self.cell(40, 4, label)
+
+    def flow_arrow_h(self, x1, x2, y, label="", above=True):
+        self.set_draw_color(*AZUL_CLARO)
+        self.set_line_width(0.55)
+        if x2 > x1:
+            self.line(x1, y, x2 - 1.5, y)
+            self.line(x2, y, x2 - 3.5, y - 2.2)
+            self.line(x2, y, x2 - 3.5, y + 2.2)
+        else:
+            self.line(x1, y, x2 + 1.5, y)
+            self.line(x2, y, x2 + 3.5, y - 2.2)
+            self.line(x2, y, x2 + 3.5, y + 2.2)
+        if label:
+            self.set_font("ArialUni", "B", 6.5)
+            self.set_text_color(217, 119, 6)
+            mid = (x1 + x2) / 2
+            self.set_xy(mid - 18, y - 5 if above else y + 1.5)
+            self.cell(36, 4, label, align="C")
+
+    def draw_business_flow(self):
+        """Diagrama gráfico del flujo de negocio (sección 4.2)."""
+        left_x, right_x = 22, 112
+        nw, nh = 76, 11
+        cx = 105
+
+        # Fila 1: Registrar pedido (centro)
+        y = self.get_y() + 2
+        self.flow_node(cx - nw / 2, y, nw, nh, "1. Registrar pedido", (227, 242, 253))
+        self.flow_arrow_v(cx, y + nh, y + nh + 8)
+        y += nh + 8
+
+        # Fila 2: Verificar stock (rombo)
+        self.flow_diamond(cx, y + 12, 42, 12, "2. ¿Stock\nsuficiente?")
+        # ramas
+        self.flow_arrow_h(cx - 42, left_x + nw, y + 12, "NO — falta materia", above=True)
+        self.flow_arrow_h(cx + 42, right_x, y + 12, "SÍ — stock OK", above=True)
+        y_branch = y + 28
+
+        # Columna izquierda: compra
+        self.flow_node(left_x, y_branch, nw, nh, "3a. Solicitud de compra", (255, 243, 224), (217, 119, 6))
+        self.flow_arrow_v(left_x + nw / 2, y_branch + nh, y_branch + nh + 7)
+        y_l2 = y_branch + nh + 7
+        self.flow_node(left_x, y_l2, nw, nh, "3b. Recibir materia prima", (255, 243, 224), (217, 119, 6))
+
+        # Columna derecha: materia lista
+        self.flow_node(right_x, y_branch, nw, nh, "3. Materia recibida", (232, 245, 233), (46, 125, 50))
+
+        # Convergencia hacia OP
+        y_join = y_l2 + nh + 10
+        self.set_draw_color(*AZUL_CLARO)
+        self.set_line_width(0.55)
+        # desde izquierda
+        lx = left_x + nw / 2
+        rx = right_x + nw / 2
+        self.line(lx, y_l2 + nh, lx, y_join - 2)
+        self.line(rx, y_branch + nh, rx, y_join - 2)
+        self.line(lx, y_join - 2, rx, y_join - 2)
+        self.flow_arrow_v(cx, y_join - 2, y_join + 6)
+
+        y = y_join + 6
+        self.flow_node(cx - nw / 2, y, nw, nh, "4. Generar orden de producción", (224, 247, 250), (0, 131, 143))
+        self.flow_arrow_v(cx, y + nh, y + nh + 7, "descuenta materia")
+        y += nh + 7
+
+        self.flow_node(cx - nw / 2, y, nw, nh, "5. Producción / avances", (237, 231, 246), (94, 53, 177))
+        self.flow_arrow_v(cx, y + nh, y + nh + 7, "avance 100%")
+        y += nh + 7
+
+        self.flow_node(cx - nw / 2, y, nw, nh, "6. Control de calidad (10 criterios)", (243, 229, 245), (123, 31, 162))
+        self.flow_arrow_v(cx, y + nh, y + nh + 7, "aprobado")
+        y += nh + 7
+
+        self.flow_node(cx - nw / 2, y, nw, nh, "7. Entrega al cliente", (232, 245, 233), (46, 125, 50))
+
+        # Leyenda
+        y_leg = y + nh + 8
+        self.set_y(y_leg)
+        self.set_font("ArialUni", "B", 8)
+        self.set_text_color(*AZUL)
+        self.cell(0, 5, "Leyenda", new_x="LMARGIN", new_y="NEXT")
+        items = [
+            ((227, 242, 253), "Inicio / pedido"),
+            ((255, 248, 225), "Decisión (RPC)"),
+            ((255, 243, 224), "Rama compra"),
+            ((224, 247, 250), "Producción"),
+            ((243, 229, 245), "Calidad"),
+            ((232, 245, 233), "Cierre / entrega"),
+        ]
+        x0 = 15
+        for fill, label in items:
+            self.set_fill_color(*fill)
+            self.set_draw_color(*AZUL)
+            self.rect(x0, self.get_y(), 6, 4, style="DF")
+            self.set_xy(x0 + 8, self.get_y() - 0.3)
+            self.set_font("ArialUni", "", 7)
+            self.set_text_color(*NEGRO)
+            self.cell(28, 4, label)
+            x0 += 32
+        self.ln(8)
+        self.set_font("ArialUni", "", 9)
+        self.set_text_color(*GRIS)
+        self.multi_cell(
+            0, 5,
+            "Las transiciones críticas viven en PostgreSQL (RPC), no solo en el navegador. "
+            "Así se evita inconsistencia si hay varios usuarios.",
+        )
+
 
 def build():
     pdf = PDF()
@@ -312,39 +453,13 @@ def build():
         pdf.bullet(t)
 
     pdf.ln(2)
+    pdf.add_page()
     pdf.h2("4.2 Diagrama del flujo de negocio")
-    pdf.set_font("ArialUni", "", 8)
-    pdf.set_text_color(*NEGRO)
-    flujo = [
-        "[Registrar pedido]",
-        "        |",
-        "        v",
-        "[verificar_stock_pedido] ----stock OK----> [materia_recibida]",
-        "        |                                        |",
-        "   stock insuficiente                            v",
-        "        v                              [generar_orden_produccion]",
-        "[solicitud_compra]                               |",
-        "        |                                        v",
-        "[recibir_materia_compra] ---------------> [en_produccion / avances]",
-        "                                                 |",
-        "                                            avance 100%",
-        "                                                 v",
-        "                                      [control_calidad / inspección]",
-        "                                                 |",
-        "                                            aprobado",
-        "                                                 v",
-        "                                      [aprobado_calidad] -> [Entrega]",
-    ]
-    for line in flujo:
-        pdf.cell(0, 4.2, line, new_x="LMARGIN", new_y="NEXT")
-    pdf.ln(3)
-    pdf.set_font("ArialUni", "", 9)
-    pdf.set_text_color(*GRIS)
-    pdf.multi_cell(
-        0, 5,
-        "Las transiciones críticas viven en PostgreSQL (RPC), no solo en el navegador. "
-        "Así se evita inconsistencia si hay varios usuarios.",
+    pdf.body(
+        "Flujo operativo completo desde el registro del pedido hasta la entrega. "
+        "La decisión de stock bifurca hacia compra o directamente a producción."
     )
+    pdf.draw_business_flow()
 
     # 5
     pdf.add_page()
@@ -411,15 +526,6 @@ def build():
         "Módulos: pedidos, producción, calidad, inventario, reportes, login con roles",
     ]:
         pdf.bullet(t)
-
-    pdf.ln(4)
-    pdf.set_font("ArialUni", "I", 9)
-    pdf.set_text_color(*GRIS)
-    pdf.multi_cell(
-        0, 5,
-        "Documento generado a partir del estado del repositorio tesis-cami-salesiana "
-        "(rediseño v2 + mejoras UX).",
-    )
 
     pdf.output(str(OUT))
     print("OK:", OUT)
