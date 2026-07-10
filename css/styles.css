@@ -245,17 +245,6 @@ table button{
     color:white;
 }
 
-/* EDITAR */
-
-table button:first-child{
-    background:#2980b9;
-}
-
-/* ELIMINAR */
-
-table button:last-child{
-    background:#c0392b;
-}
 /* DASHBOARD */
 
 .cards{
@@ -585,17 +574,6 @@ table button{
     color:white;
 }
 
-/* EDITAR */
-
-table button:first-child{
-    background:#2980b9;
-}
-
-/* ELIMINAR */
-
-table button:last-child{
-    background:#c0392b;
-}
 /* DASHBOARD */
 
 .cards{
@@ -1076,52 +1054,306 @@ hr{
     line-height:1.6;
 
 }
-.btn-volver{
+/* ── TOASTS / MENSAJES ───────────────────────────────────────────────────── */
 
-    background:#003b73;
-
-    color:white;
-
-    border:none;
-
-    padding:10px 18px;
-
-    border-radius:8px;
-
-    cursor:pointer;
-
-    margin-bottom:20px;
-
+#toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: min(400px, calc(100vw - 32px));
+    pointer-events: none;
 }
 
-.btn-volver:hover{
-
-    background:#0056a3;
-
+.toast {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 8px 28px rgba(0, 59, 115, 0.18);
+    border-left: 4px solid #003b73;
+    opacity: 0;
+    transform: translateX(24px);
+    transition: opacity 0.28s ease, transform 0.28s ease;
+    pointer-events: auto;
+    font-size: 14px;
+    line-height: 1.45;
+    color: #1e293b;
 }
 
-.btn-cancelar{
-    background:#6c757d;
-    color:white;
-    border:none;
-    padding:12px 20px;
-    border-radius:10px;
-    cursor:pointer;
-    font-size:15px;
-    margin-left:8px;
+.toast-visible {
+    opacity: 1;
+    transform: translateX(0);
 }
 
-.btn-cancelar:hover{
-    background:#5a6268;
+.toast-saliendo {
+    opacity: 0;
+    transform: translateX(16px);
 }
 
-.btn-guardar{
-    background:#27ae60 !important;
+.toast-icon {
+    flex-shrink: 0;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    background: #003b73;
 }
 
-.btn-guardar:hover{
-    background:#219a52 !important;
+.toast-exito { border-left-color: #1a9d5c; }
+.toast-exito .toast-icon { background: #1a9d5c; }
+
+.toast-error { border-left-color: #c0392b; }
+.toast-error .toast-icon { background: #c0392b; }
+
+.toast-aviso { border-left-color: #d68910; }
+.toast-aviso .toast-icon { background: #d68910; }
+
+.toast-msg { flex: 1; padding-top: 2px; }
+
+.toast-cerrar {
+    flex-shrink: 0;
+    border: none;
+    background: transparent;
+    color: #94a3b8;
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0 2px;
+    margin: -2px 0 0;
 }
+
+.toast-cerrar:hover { color: #475569; }
+
+.confirm-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.45);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.confirm-overlay.confirm-visible { opacity: 1; }
+
+.confirm-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 28px 24px 22px;
+    max-width: 400px;
+    width: 100%;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.2);
+}
+
+.confirm-msg {
+    font-size: 16px;
+    color: #1e293b;
+    margin-bottom: 22px;
+    line-height: 1.5;
+    text-align: center;
+}
+
+.confirm-acciones {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* ── BOTONES UNIFICADOS ──────────────────────────────────────────────────── */
+
+.btn,
+.formulario button,
+table button,
+.btn-volver,
+.btn-cancelar,
+.btn-editar,
+.btn-eliminar,
+.btn-reset-mock {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.2;
+    transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+.btn:hover,
+.formulario button:hover,
+table button:hover,
+.btn-volver:hover,
+.btn-cancelar:hover,
+.btn-editar:hover,
+.btn-eliminar:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 59, 115, 0.15);
+}
+
+.btn:active,
+.formulario button:active,
+table button:active {
+    transform: translateY(0);
+}
+
+.formulario button,
+.btn-primario {
+    background: #0055a5;
+    color: #fff;
+}
+
+.formulario button:hover,
+.btn-primario:hover {
+    background: #003b73;
+}
+
+.btn-secundario,
+.btn-cancelar {
+    background: #64748b !important;
+    color: #fff !important;
+}
+
+.btn-secundario:hover,
+.btn-cancelar:hover {
+    background: #475569 !important;
+}
+
+.btn-exito,
+.btn-guardar {
+    background: #1a9d5c !important;
+    color: #fff !important;
+}
+
+.btn-exito:hover,
+.btn-guardar:hover {
+    background: #15804b !important;
+}
+
+.btn-peligro,
+.btn-eliminar {
+    background: #c0392b !important;
+    color: #fff !important;
+    padding: 7px 12px;
+    font-size: 13px;
+}
+
+.btn-peligro:hover,
+.btn-eliminar:hover {
+    background: #9b2e22 !important;
+}
+
+.btn-editar {
+    background: #2980b9 !important;
+    color: #fff !important;
+    padding: 7px 12px;
+    font-size: 13px;
+}
+
+.btn-editar:hover {
+    background: #1f6694 !important;
+}
+
+.btn-volver {
+    background: #003b73;
+    color: #fff;
+    margin-bottom: 20px;
+}
+
+.btn-volver:hover {
+    background: #0056a3;
+}
+
+/* Acciones en tablas */
+table button,
+.btn-accion {
+    padding: 7px 12px;
+    font-size: 13px;
+    margin: 2px;
+    background: #0055a5;
+    color: #fff;
+}
+
+table button:hover,
+.btn-accion:hover {
+    background: #003b73;
+}
+
+.btn-op {
+    background: #0d9488 !important;
+}
+
+.btn-op:hover {
+    background: #0f766e !important;
+}
+
+.btn-compra {
+    background: #d97706 !important;
+}
+
+.btn-compra:hover {
+    background: #b45309 !important;
+}
+
+.btn-entrega {
+    background: #1a9d5c !important;
+}
+
+.btn-entrega:hover {
+    background: #15804b !important;
+}
+
+.btn-avance {
+    background: #6366f1 !important;
+}
+
+.btn-avance:hover {
+    background: #4f46e5 !important;
+}
+
+.btn-calidad {
+    background: #7c3aed !important;
+}
+
+.btn-calidad:hover {
+    background: #6d28d9 !important;
+}
+
+/* colores de acción: .btn-editar, .btn-eliminar, .btn-op, etc. */
+
+table td .btn-editar + .btn-eliminar,
+table td button + button {
+    margin-left: 4px;
+}
+
+@media (max-width: 768px) {
+    #toast-container {
+        left: 12px;
+        right: 12px;
+        top: 12px;
+        max-width: none;
+    }
+}
+
 
 /* IMPRESIÓN DE REPORTES */
 
@@ -1135,6 +1367,65 @@ hr{
 .login-body { justify-content: center; align-items: center; min-height: 100vh; }
 .login-card { max-width: 400px; margin: auto; text-align: center; }
 .login-card select { width: 100%; padding: 12px; margin-top: 10px; border-radius: 10px; }
+
+.login-demo {
+    margin-top: 28px;
+    padding-top: 20px;
+    border-top: 1px solid #e2e8f0;
+    text-align: left;
+}
+.login-demo-titulo {
+    font-size: 13px;
+    font-weight: bold;
+    color: #003b73;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+.login-demo-lista {
+    list-style: none;
+    margin: 0 0 14px;
+    padding: 0;
+}
+.login-demo-lista li {
+    background: #f4f6f9;
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    font-size: 13px;
+    color: #1a1a1a;
+}
+.login-demo-lista li span {
+    color: #64748b;
+    font-size: 12px;
+}
+.login-demo-flujo {
+    font-size: 12px;
+    color: #64748b;
+    line-height: 1.5;
+}
+.login-demo-flujo code {
+    font-size: 11px;
+    background: #eef2f7;
+    padding: 1px 4px;
+    border-radius: 4px;
+}
+.login-modo-mock {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 4px 10px;
+    background: #e8f4fc;
+    color: #003b73;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: bold;
+}
+.btn-reset-mock {
+    margin-top: 12px;
+    background: #64748b !important;
+    font-size: 13px;
+    padding: 8px 14px;
+}
 
 /* SESIÓN */
 .sesion-info { margin-top: 40px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.2); font-size: 14px; }

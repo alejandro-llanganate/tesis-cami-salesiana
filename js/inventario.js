@@ -85,17 +85,19 @@ async function agregarMateriaPrima() {
     var nombre = document.getElementById("mpNombre").value.trim();
     var precio = parseFloat(document.getElementById("mpPrecio").value);
     var stock = parseFloat(document.getElementById("mpStock").value);
-    if (!prov || !nombre || isNaN(precio) || isNaN(stock)) { alert("Complete todos los campos"); return; }
+    if (!prov || !nombre || isNaN(precio) || isNaN(stock)) { mostrarAviso("Complete todos los campos"); return; }
 
     if (edicionActiva && edicionActiva.seccion === "materia") {
         await actualizarRegistro("materia_prima", edicionActiva.id, {
             proveedor_id: prov, nombre: nombre, precio: precio, stock_actual: stock
         });
         cancelarEdicion();
+        mostrarExito("Materia prima actualizada.");
     } else {
         await insertarRegistro("materia_prima", {
             proveedor_id: prov, nombre: nombre, precio: precio, stock_actual: stock
         });
+        mostrarExito("Materia prima agregada.");
     }
     await cargarDatos();
     limpiarCampos(["mpNombre","mpPrecio","mpStock"]);
@@ -119,13 +121,15 @@ async function agregarSuministro() {
     var nombre = document.getElementById("suNombre").value.trim();
     var tipo = document.getElementById("suTipo").value;
     var stock = parseFloat(document.getElementById("suStock").value);
-    if (!nombre || !tipo || isNaN(stock)) { alert("Complete todos los campos"); return; }
+    if (!nombre || !tipo || isNaN(stock)) { mostrarAviso("Complete todos los campos"); return; }
 
     if (edicionActiva && edicionActiva.seccion === "suministros") {
         await actualizarRegistro("suministros", edicionActiva.id, { nombre: nombre, tipo: tipo, stock_actual: stock });
         cancelarEdicion();
+        mostrarExito("Suministro actualizado.");
     } else {
         await insertarRegistro("suministros", { nombre: nombre, tipo: tipo, stock_actual: stock, precio: 0 });
+        mostrarExito("Suministro agregado.");
     }
     await cargarDatos();
     limpiarCampos(["suNombre","suStock"]);

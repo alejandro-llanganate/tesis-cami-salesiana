@@ -11,6 +11,7 @@
         <img src="img/LOGO.jpeg" class="logo" alt="Logo">
         <h1>MARTIN Company</h1>
         <p>Sistema de Gestión de Producción</p>
+        <p class="login-modo-mock" id="badgeMock" style="display:none;">Modo demo · datos de prueba</p>
         <br>
         <label>Seleccione su perfil:</label>
         <select id="perfilSelect">
@@ -18,24 +19,59 @@
         </select>
         <br><br>
         <button onclick="iniciarSesion()">Ingresar al sistema</button>
+
+        <div class="login-demo" id="loginDemo">
+            <p class="login-demo-titulo">Datos de prueba</p>
+            <ul class="login-demo-lista" id="loginDemoLista"></ul>
+            <p class="login-demo-flujo">
+                Flujo mock: <strong>PED-001</strong> completado ·
+                <strong>PED-003</strong> compra ·
+                <strong>PED-004</strong> generar OP ·
+                <strong>PED-005</strong> calidad ·
+                <strong>PED-006</strong> entregar ·
+                <strong>PED-007</strong> retraso
+            </p>
+            <button type="button" class="btn-reset-mock" id="btnResetMock" style="display:none;" onclick="resetMockData()">
+                Restaurar datos de prueba
+            </button>
+        </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-    <script src="js/supabase-config.js?v=4"></script>
-    <script src="js/supabase-client.js?v=4"></script>
+    <script src="js/supabase-config.js?v=5"></script>
+    <script src="js/mock-data.js?v=5"></script>
+    <script src="js/supabase-client.js?v=5"></script>
+    <script src="js/ui.js?v=5"></script>
     <script>
         document.addEventListener("DOMContentLoaded", async function () {
+            if (window.USE_MOCK_DATA) {
+                document.getElementById("badgeMock").style.display = "block";
+                document.getElementById("btnResetMock").style.display = "inline-block";
+            }
+
             var perfiles = await obtenerPerfiles();
             var select = document.getElementById("perfilSelect");
+            var lista = document.getElementById("loginDemoLista");
+
+            if (!perfiles.length) {
+                lista.innerHTML = "<li>No hay perfiles. Activa <code>USE_MOCK_DATA</code> o configura Supabase.</li>";
+                return;
+            }
+
             perfiles.forEach(function (p) {
+                var rolTxt = p.rol === "supervisora" ? "Supervisora" : "Maquiladora";
                 var opt = document.createElement("option");
                 opt.value = JSON.stringify({ id: p.id, nombre: p.nombre, rol: p.rol, email: p.email });
-                opt.textContent = p.nombre + " (" + (p.rol === "supervisora" ? "Supervisora" : "Maquiladora") + ")";
+                opt.textContent = p.nombre + " (" + rolTxt + ")";
                 select.appendChild(opt);
+
+                var li = document.createElement("li");
+                li.innerHTML = "<strong>" + p.nombre + "</strong><br><span>" + p.email + " · " + rolTxt + "</span>";
+                lista.appendChild(li);
             });
         });
         function iniciarSesion() {
             var val = document.getElementById("perfilSelect").value;
-            if (!val) { alert("Seleccione un perfil"); return; }
+            if (!val) { mostrarAviso("Seleccione un perfil"); return; }
             sessionStorage.setItem("martin_sesion", val);
             window.location.href = "index.html";
         }

@@ -1,6 +1,29 @@
 (function () {
     "use strict";
 
+    // Sesión siempre disponible (mock o Supabase)
+    window.requerirSesion = function () {
+        var sesion = sessionStorage.getItem("martin_sesion");
+        if (!sesion) {
+            window.location.href = "login.html";
+            return null;
+        }
+        return JSON.parse(sesion);
+    };
+
+    window.esSupervisora = function () {
+        var s = window.requerirSesion();
+        return s && s.rol === "supervisora";
+    };
+
+    window.cerrarSesion = function () {
+        sessionStorage.removeItem("martin_sesion");
+        window.location.href = "login.html";
+    };
+
+    // API de datos: mock-data.js ya la registró
+    if (window.USE_MOCK_DATA) return;
+
     var supabaseClient = null;
 
     function initSupabase() {
@@ -17,8 +40,14 @@
     function manejarError(error, accion) {
         console.error("Supabase:", error);
         var msg = "Error al " + accion + ": " + error.message;
-        if (error.message.indexOf("does not exist") !== -1) alert("Ejecuta supabase/martin_company.sql en Supabase.");
-        else alert(msg);
+        if (error.message.indexOf("does not exist") !== -1) {
+            if (window.mostrarError) mostrarError("Ejecuta supabase/martin_company.sql en Supabase.");
+            else alert("Ejecuta supabase/martin_company.sql en Supabase.");
+        } else if (window.mostrarError) {
+            mostrarError(msg);
+        } else {
+            alert(msg);
+        }
     }
 
     window.obtenerRegistros = async function (tabla, select) {
@@ -119,25 +148,6 @@
         if (rol) q = q.eq("rol", rol);
         var r = await q;
         return r.data || [];
-    };
-
-    window.requerirSesion = function () {
-        var sesion = sessionStorage.getItem("martin_sesion");
-        if (!sesion) {
-            window.location.href = "login.html";
-            return null;
-        }
-        return JSON.parse(sesion);
-    };
-
-    window.esSupervisora = function () {
-        var s = window.requerirSesion();
-        return s && s.rol === "supervisora";
-    };
-
-    window.cerrarSesion = function () {
-        sessionStorage.removeItem("martin_sesion");
-        window.location.href = "login.html";
     };
 
 })();

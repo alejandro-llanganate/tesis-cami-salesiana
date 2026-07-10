@@ -54,7 +54,7 @@
                 <tbody id="tablaItemsTemp"></tbody>
             </table>
             <br>
-            <button onclick="registrarPedido()">Registrar y verificar stock</button>
+            <button class="btn-exito" onclick="registrarPedido()">Registrar y verificar stock</button>
         </section>
 
         <!-- LISTA -->
@@ -85,13 +85,15 @@
             <div class="formulario">
                 <select id="opMaquiladora"></select>
                 <input type="number" id="opDias" value="7" placeholder="Días de plazo">
-                <button onclick="generarOrdenProduccion()">Generar OP (descuenta materia prima)</button>
+                <button class="btn-op" onclick="generarOrdenProduccion()">Generar OP (descuenta materia prima)</button>
             </div>
         </section>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-    <script src="js/supabase-config.js?v=4"></script>
-    <script src="js/supabase-client.js?v=4"></script>
+    <script src="js/supabase-config.js?v=5"></script>
+    <script src="js/mock-data.js?v=5"></script>
+    <script src="js/supabase-client.js?v=5"></script>
+    <script src="js/ui.js?v=5"></script>
     <script src="js/crud.js?v=4"></script>
     <script src="js/catalogos.js?v=4"></script>
     <script src="js/pedidos.js?v=4"></script>

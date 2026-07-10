@@ -31,7 +31,7 @@ function renderizarOrdenes() {
         var retraso = new Date(o.fecha_fin_planeada) < new Date() && o.porcentaje_avance < 100;
         f.insertCell(5).textContent = retraso ? "🔴 Retraso" : "🟢 A tiempo";
         f.insertCell(6).innerHTML =
-            '<button onclick="abrirAvance(\''+o.id+'\','+o.porcentaje_avance+')">Registrar avance</button>';
+            '<button class="btn-avance" onclick="abrirAvance(\''+o.id+'\','+o.porcentaje_avance+')">Registrar avance</button>';
     });
 }
 
@@ -64,7 +64,7 @@ async function guardarAvance() {
     var desc = document.getElementById("avanceDesc").value;
     var sesion = JSON.parse(sessionStorage.getItem("martin_sesion"));
 
-    if (isNaN(pct) || pct < 0 || pct > 100) { alert("Porcentaje inválido"); return; }
+    if (isNaN(pct) || pct < 0 || pct > 100) { mostrarAviso("Porcentaje inválido"); return; }
 
     var resultado = await llamarRPC("registrar_avance_produccion", {
         p_orden_id: ordenId,
@@ -74,8 +74,9 @@ async function guardarAvance() {
     });
 
     if (resultado) {
-        if (resultado.retraso) alert("⚠️ Alerta: la orden tiene retraso.");
-        if (pct >= 100) alert("Producción completada. Pasa a control de calidad.");
+        if (resultado.retraso) mostrarAviso("La orden tiene retraso respecto a la fecha planeada.");
+        if (pct >= 100) mostrarExito("Producción completada. Pasa a control de calidad.");
+        else mostrarExito("Avance registrado: " + pct + "%");
         cerrarModal();
         await cargarOrdenes();
     }

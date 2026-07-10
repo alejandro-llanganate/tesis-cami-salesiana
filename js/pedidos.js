@@ -65,9 +65,9 @@ function agregarItemPedido() {
     var color = document.getElementById("pedColor").value;
     var talla = document.getElementById("pedTalla").value;
     var cant = parseInt(document.getElementById("pedCantidad").value);
-    if (!prod || !color || !talla || isNaN(cant)) { alert("Complete producto, color, talla y cantidad"); return; }
+    if (!prod || !color || !talla || isNaN(cant)) { mostrarAviso("Complete producto, color, talla y cantidad"); return; }
     var varId = buscarVarianteId(variantes, prod, color, talla);
-    if (!varId) { alert("Variante no encontrada"); return; }
+    if (!varId) { mostrarError("Variante no encontrada"); return; }
     itemPedido.push({ producto_variante_id: varId, cantidad: cant, etiqueta: prod+" | "+color+" | "+talla });
     renderizarItemsTemp();
     limpiarCampos(["pedCantidad"]);
@@ -92,7 +92,7 @@ async function registrarPedido() {
     var fecha = document.getElementById("pedFecha").value;
     var fechaEnt = document.getElementById("pedFechaEntrega").value;
     if (!cliente || !numero || !fecha || itemPedido.length === 0) {
-        alert("Complete cliente, número, fecha y al menos un ítem"); return;
+        mostrarAviso("Complete cliente, número, fecha y al menos un ítem"); return;
     }
 
     var pedido = await insertarRegistro("pedidos", {
@@ -111,9 +111,9 @@ async function registrarPedido() {
 
     var resultado = await llamarRPC("verificar_stock_pedido", { p_pedido_id: pedido.id });
     if (resultado && resultado.stock_suficiente) {
-        alert("Pedido registrado. Stock suficiente → listo para producción.");
+        mostrarExito("Pedido registrado. Stock suficiente → listo para producción.");
     } else {
-        alert("Pedido registrado. Stock insuficiente → se generó solicitud de compra.");
+        mostrarAviso("Pedido registrado. Stock insuficiente → se generó solicitud de compra.");
     }
 
     itemPedido = [];
@@ -133,13 +133,13 @@ function renderizarPedidos() {
         f.insertCell(3).textContent = estadoPedidoTexto(p.estado);
         var acciones = "";
         if (p.estado === "materia_recibida") {
-            acciones += '<button onclick="abrirOrdenProduccion(\''+p.id+'\')">Generar OP</button> ';
+            acciones += '<button class="btn-op" onclick="abrirOrdenProduccion(\''+p.id+'\')">Generar OP</button> ';
         }
         if (p.estado === "stock_insuficiente") {
-            acciones += '<button onclick="recibirCompra(\''+p.id+'\')">Recibir materia</button> ';
+            acciones += '<button class="btn-compra" onclick="recibirCompra(\''+p.id+'\')">Recibir materia</button> ';
         }
         if (p.estado === "aprobado_calidad") {
-            acciones += '<button onclick="registrarEntrega(\''+p.id+'\')">Entregar</button>';
+            acciones += '<button class="btn-entrega" onclick="registrarEntrega(\''+p.id+'\')">Entregar</button>';
         }
         f.insertCell(4).innerHTML = acciones;
     });
@@ -158,9 +158,9 @@ function renderizarStock() {
 async function recibirCompra(pedidoId) {
     var sols = await obtenerRegistros("solicitudes_compra");
     var sol = sols.find(function(s){ return s.pedido_id === pedidoId && s.estado === "pendiente"; });
-    if (!sol) { alert("No hay solicitud pendiente"); return; }
+    if (!sol) { mostrarAviso("No hay solicitud pendiente"); return; }
     await llamarRPC("recibir_materia_compra", { p_solicitud_id: sol.id });
-    alert("Materia prima ingresada al inventario.");
+    mostrarExito("Materia prima ingresada al inventario.");
     await cargarPedidos();
 }
 
@@ -173,12 +173,12 @@ async function generarOrdenProduccion() {
     var pedidoId = document.getElementById("opPedidoId").value;
     var maqId = document.getElementById("opMaquiladora").value;
     var dias = parseInt(document.getElementById("opDias").value) || 7;
-    if (!maqId) { alert("Seleccione maquiladora"); return; }
+    if (!maqId) { mostrarAviso("Seleccione maquiladora"); return; }
     var ordenId = await llamarRPC("generar_orden_produccion", {
         p_pedido_id: pedidoId, p_maquiladora_id: maqId, p_dias_plazo: dias
     });
     if (ordenId) {
-        alert("Orden de producción generada. Materia prima descontada.");
+        mostrarExito("Orden de producción generada. Materia prima descontada.");
         volverMenuPedidos();
         await cargarPedidos();
     }
@@ -188,6 +188,6 @@ async function registrarEntrega(pedidoId) {
     var sesion = JSON.parse(sessionStorage.getItem("martin_sesion"));
     await insertarRegistro("entregas", { pedido_id: pedidoId, responsable_id: sesion.id, estado: "entregado" });
     await actualizarRegistro("pedidos", pedidoId, { estado: "entregado" });
-    alert("Entrega registrada.");
+    mostrarExito("Entrega registrada correctamente.");
     await cargarPedidos();
 }

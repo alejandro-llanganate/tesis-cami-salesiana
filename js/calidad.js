@@ -27,7 +27,7 @@ function renderizarOrdenesCalidad() {
         f.insertCell(0).textContent = o.pedidos ? o.pedidos.numero : "";
         f.insertCell(1).textContent = o.perfiles ? o.perfiles.nombre : "";
         f.insertCell(2).textContent = o.porcentaje_avance + "%";
-        f.insertCell(3).innerHTML = '<button onclick="iniciarInspeccion(\''+o.id+'\')">Inspeccionar</button>';
+        f.insertCell(3).innerHTML = '<button class="btn-calidad" onclick="iniciarInspeccion(\''+o.id+'\')">Inspeccionar</button>';
     });
 }
 
@@ -64,7 +64,7 @@ async function guardarInspeccion() {
     var sesion = JSON.parse(sessionStorage.getItem("martin_sesion"));
 
     if (Object.keys(inspeccionItems).length < criterios.length) {
-        alert("Evalúe los 10 criterios de calidad"); return;
+        mostrarAviso("Evalúe los 10 criterios de calidad"); return;
     }
 
     var inspeccion = await insertarRegistro("inspecciones_calidad", {
@@ -86,7 +86,8 @@ async function guardarInspeccion() {
     var resultado = await llamarRPC("aprobar_inspeccion_calidad", { p_inspeccion_id: inspeccion.id });
 
     if (resultado) {
-        alert(resultado.mensaje);
+        if (resultado.aprobada) mostrarExito(resultado.mensaje);
+        else mostrarError(resultado.mensaje);
         document.getElementById("seccionInspeccion").style.display = "none";
         await cargarOrdenesCalidad();
     }
