@@ -60,6 +60,15 @@ async function cargarCatalogos() {
     llenarSelect("pedProducto", Object.keys(productos).map(function (p) {
         return { id: p, nombre: p };
     }), "id", "nombre", "Producto");
+
+    await prepararFormularioPedido();
+}
+
+async function prepararFormularioPedido() {
+    var num = document.getElementById("pedNumero");
+    if (num) num.value = await generarNumeroPedido();
+    var fecha = document.getElementById("pedFecha");
+    if (fecha && !fecha.value) fecha.value = new Date().toISOString().slice(0, 10);
 }
 
 async function cargarPedidos() {
@@ -75,6 +84,7 @@ function mostrarSeccionPedido(id) {
         if (el) el.classList.add("d-none");
     });
     document.getElementById(id).classList.remove("d-none");
+    if (id === "registro") prepararFormularioPedido();
 }
 
 function volverMenuPedidos() {
@@ -146,11 +156,11 @@ function quitarItem(i) {
 
 async function registrarPedido() {
     var cliente = document.getElementById("pedCliente").value;
-    var numero = document.getElementById("pedNumero").value.trim();
+    var numero = document.getElementById("pedNumero").value.trim() || await generarNumeroPedido();
     var fecha = document.getElementById("pedFecha").value;
     var fechaEnt = document.getElementById("pedFechaEntrega").value;
-    if (!cliente || !numero || !fecha || itemPedido.length === 0) {
-        mostrarAviso("Complete cliente, número, fecha y al menos un ítem");
+    if (!cliente || !fecha || itemPedido.length === 0) {
+        mostrarAviso("Complete cliente, fecha y al menos un ítem");
         return;
     }
 
@@ -171,14 +181,15 @@ async function registrarPedido() {
 
         var resultado = await llamarRPC("verificar_stock_pedido", { p_pedido_id: pedido.id });
         if (resultado && resultado.stock_suficiente) {
-            mostrarExito("Pedido registrado. Stock suficiente → listo para producción.");
+            mostrarExito("Pedido " + numero + " registrado. Stock suficiente → listo para producción.");
         } else {
-            mostrarAviso("Pedido registrado. Stock insuficiente → se generó solicitud de compra.");
+            mostrarAviso("Pedido " + numero + " registrado. Stock insuficiente → se generó solicitud de compra.");
         }
 
         itemPedido = [];
         renderizarItemsTemp();
-        limpiarCampos(["pedNumero", "pedFecha", "pedFechaEntrega", "pedCantidad"]);
+        limpiarCampos(["pedFechaEntrega", "pedCantidad"]);
+        await prepararFormularioPedido();
         await cargarPedidos();
     }, { titulo: "Registrar pedido", okTexto: "Registrar" });
 }

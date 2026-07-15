@@ -8,7 +8,7 @@
 
     if (!window.USE_MOCK_DATA) return;
 
-    var STORAGE_KEY = "martin_mock_store_v1";
+    var STORAGE_KEY = "martin_mock_store_v2";
 
     function uid(prefix) {
         return (prefix || "id") + "-" + Math.random().toString(36).slice(2, 10);
@@ -27,9 +27,9 @@
     }
 
     function crearStoreInicial() {
-        var sup = { id: "perf-sup", nombre: "Ana Supervisora", email: "supervisora@martin.com", rol: "supervisora", activo: true, created_at: ahora(-30) };
-        var maq1 = { id: "perf-maq1", nombre: "Carlos Maquilador", email: "maquiladora@martin.com", rol: "maquiladora", activo: true, created_at: ahora(-30) };
-        var maq2 = { id: "perf-maq2", nombre: "María Maquiladora Norte", email: "maria.maquila@martin.com", rol: "maquiladora", activo: true, created_at: ahora(-30) };
+        var sup = { id: "perf-sup", nombre: "Ana Supervisora", email: "supervisora@martin.com", password: "Ana2026", rol: "supervisora", activo: true, created_at: ahora(-30) };
+        var maq1 = { id: "perf-maq1", nombre: "Carlos Maquilador", email: "maquiladora@martin.com", password: "Carlos2026", rol: "maquiladora", activo: true, created_at: ahora(-30) };
+        var maq2 = { id: "perf-maq2", nombre: "María Maquiladora Norte", email: "maria.maquila@martin.com", password: "Maria2026", rol: "maquiladora", activo: true, created_at: ahora(-30) };
 
         var cli1 = { id: "cli-1", nombre: "Clínica San Rafael", contacto: "Dra. Pérez", telefono: "02-2345678", created_at: ahora(-20) };
         var cli2 = { id: "cli-2", nombre: "Hospital Central", contacto: "Ing. Torres", telefono: "02-3456789", created_at: ahora(-20) };
@@ -501,16 +501,35 @@
     window.obtenerPerfiles = async function (rol) {
         return tabla("perfiles").filter(function (p) {
             return p.activo && (!rol || p.rol === rol);
+        }).map(function (p) {
+            return { id: p.id, nombre: p.nombre, email: p.email, rol: p.rol, activo: p.activo };
         });
+    };
+
+    window.autenticarUsuario = async function (email, password) {
+        var correo = String(email || "").trim().toLowerCase();
+        var clave = String(password || "");
+        var user = tabla("perfiles").find(function (p) {
+            return p.activo && String(p.email).toLowerCase() === correo && p.password === clave;
+        });
+        if (!user) return null;
+        return { id: user.id, nombre: user.nombre, email: user.email, rol: user.rol };
+    };
+
+    window.generarNumeroPedido = async function () {
+        var max = 0;
+        tabla("pedidos").forEach(function (p) {
+            var m = String(p.numero || "").match(/PED-(\d+)/i);
+            if (m) max = Math.max(max, parseInt(m[1], 10));
+        });
+        return "PED-" + String(max + 1).padStart(3, "0");
     };
 
     window.resetMockData = function () {
         localStorage.removeItem(STORAGE_KEY);
         db = crearStoreInicial();
         guardarStore(db);
-        if (window.mostrarExito) mostrarExito("Datos de prueba restaurados.");
+        if (window.mostrarExito) mostrarExito("Datos restaurados.");
         setTimeout(function () { window.location.reload(); }, 600);
     };
-
-    console.info("%cMARTIN · modo mock activo", "color:#003b73;font-weight:bold", "— sin SQL / sin Supabase");
 })();

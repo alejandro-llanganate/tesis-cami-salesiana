@@ -42,6 +42,7 @@ CREATE TABLE perfiles (
     id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     nombre      TEXT NOT NULL,
     email       TEXT UNIQUE NOT NULL,
+    password    TEXT NOT NULL DEFAULT 'Martin2026',
     rol         TEXT NOT NULL CHECK (rol IN ('supervisora', 'maquiladora')),
     activo      BOOLEAN NOT NULL DEFAULT true,
     created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
@@ -550,10 +551,10 @@ GRANT SELECT ON vista_pedidos_proceso TO anon, authenticated;
 -- =============================================================================
 
 -- Roles / perfiles
-INSERT INTO perfiles (nombre, email, rol) VALUES
-    ('Ana Supervisora', 'supervisora@martin.com', 'supervisora'),
-    ('Carlos Maquilador', 'maquiladora@martin.com', 'maquiladora'),
-    ('María Maquiladora Norte', 'maria.maquila@martin.com', 'maquiladora');
+INSERT INTO perfiles (nombre, email, password, rol) VALUES
+    ('Ana Supervisora', 'supervisora@martin.com', 'Ana2026', 'supervisora'),
+    ('Carlos Maquilador', 'maquiladora@martin.com', 'Carlos2026', 'maquiladora'),
+    ('María Maquiladora Norte', 'maria.maquila@martin.com', 'Maria2026', 'maquiladora');
 
 -- Proveedores (Excel filas 2-8)
 INSERT INTO proveedores (nombre, correo, telefono, direccion) VALUES

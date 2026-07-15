@@ -144,10 +144,36 @@
     window.obtenerPerfiles = async function (rol) {
         var c = initSupabase();
         if (!c) return [];
-        var q = c.from("perfiles").select("*").eq("activo", true);
+        var q = c.from("perfiles").select("id, nombre, email, rol, activo").eq("activo", true);
         if (rol) q = q.eq("rol", rol);
         var r = await q;
         return r.data || [];
+    };
+
+    window.autenticarUsuario = async function (email, password) {
+        var c = initSupabase();
+        if (!c) return null;
+        var correo = String(email || "").trim().toLowerCase();
+        var r = await c.from("perfiles")
+            .select("id, nombre, email, rol, password, activo")
+            .eq("email", correo)
+            .eq("activo", true)
+            .maybeSingle();
+        if (r.error || !r.data) return null;
+        if (r.data.password !== String(password || "")) return null;
+        return { id: r.data.id, nombre: r.data.nombre, email: r.data.email, rol: r.data.rol };
+    };
+
+    window.generarNumeroPedido = async function () {
+        var c = initSupabase();
+        if (!c) return "PED-001";
+        var r = await c.from("pedidos").select("numero").order("created_at", { ascending: false });
+        var max = 0;
+        (r.data || []).forEach(function (p) {
+            var m = String(p.numero || "").match(/PED-(\d+)/i);
+            if (m) max = Math.max(max, parseInt(m[1], 10));
+        });
+        return "PED-" + String(max + 1).padStart(3, "0");
     };
 
 })();
